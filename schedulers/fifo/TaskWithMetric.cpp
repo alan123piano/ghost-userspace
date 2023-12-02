@@ -13,7 +13,7 @@ namespace ghost
 
         absl::Time currentTime = absl::Now();
         absl::Duration d = currentTime - m.stateStarted;
-        switch (currentState)
+        switch (m.currentState)
         {
         case TaskState::kBlocked:
             m.blockTime += d;
