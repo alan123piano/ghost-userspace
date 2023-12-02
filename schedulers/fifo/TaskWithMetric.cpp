@@ -92,7 +92,7 @@ namespace ghost
 
         double accum = 0.0;
         std::for_each(std::begin(v), std::end(v), [&](const Metric &d)
-                      { accum += (d.onCpuTime - m) * (d - m.onCpuTime); });
+                      { accum += (d.onCpuTime - m) * (d.onCpuTime - m); });
 
         double stdev = sqrt(accum / (v.size() - 1));
         return stdev;
