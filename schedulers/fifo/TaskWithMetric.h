@@ -33,7 +33,6 @@ namespace ghost
 
         struct Metric // Record how long it stayed in that state
         {
-        public:
             Gtid gtid;
 
             absl::Time createdAt;        // created time
@@ -66,9 +65,6 @@ namespace ghost
             }
             void printResult(FILE *to);
             static double stddev(const std::vector<Metric> &v);
-
-        private:
-            static Metric::TaskState getStateFromString(std::string_view state);
         };
 
         Metric m;

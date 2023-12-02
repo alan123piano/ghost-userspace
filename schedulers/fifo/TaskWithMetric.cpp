@@ -86,13 +86,14 @@ namespace ghost
         double sum = 0;
         for (auto &m : v)
         {
-            sum += m.onCpuTime;
+            sum += absl::ToDoubleMicroseconds(m.onCpuTime);
         }
         double m = sum / v.size();
 
         double accum = 0.0;
         std::for_each(std::begin(v), std::end(v), [&](const Metric &d)
-                      { accum += (d.onCpuTime - m) * (d.onCpuTime - m); });
+                      { double diff = absl::ToDoubleMicroseconds(d.onCpuTime) - m;
+                        accum += diff*diff; });
 
         double stdev = sqrt(accum / (v.size() - 1));
         return stdev;
