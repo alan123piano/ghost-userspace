@@ -10,3 +10,6 @@ env
 /orca/orca
 /orca/orca_client
 /orca/*.o
+
+/.DS_Store
+__pycache__
