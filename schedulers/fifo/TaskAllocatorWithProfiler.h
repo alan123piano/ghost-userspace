@@ -11,21 +11,21 @@ namespace ghost
         : public SingleThreadMallocTaskAllocator<TaskWithMetric>
     {
     public:
-        void FreeTask(TaaskWithMetric *task) override
+        void FreeTask(TaskWithMetric *task) override
         {
             task->updateState("Died");
             Parent::FreeTask(task);
         }
 
     private:
-        using Parent = SingleThreadMallocTaskAllocator<TaaskWithMetric>;
+        using Parent = SingleThreadMallocTaskAllocator<TaskWithMetric>;
     };
 
     class ThreadSafeMallocTaskAllocatorWithProfiler
-        : public ThreadSafeMallocTaskAllocator<TaaskWithMetric>
+        : public ThreadSafeMallocTaskAllocator<TaskWithMetric>
     {
     public:
-        void FreeTask(TaaskWithMetric *task) override
+        void FreeTask(TaskWithMetric *task) override
         {
             absl::MutexLock lock(&Parent::mu_);
             task->updateState("Died");
@@ -33,7 +33,7 @@ namespace ghost
         }
 
     private:
-        using Base = SingleThreadMallocTaskAllocator<TaaskWithMetric>;
+        using Base = SingleThreadMallocTaskAllocator<TaskWithMetric>;
     };
 
 }
