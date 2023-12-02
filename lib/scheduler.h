@@ -494,8 +494,9 @@ class ThreadSafeMallocTaskAllocator
     Parent::ForEachTask(func);
   }
 
- private:
+ protected:
   absl::Mutex mu_;
+ private:
   using Parent = SingleThreadMallocTaskAllocator<TaskType>;
 };
 

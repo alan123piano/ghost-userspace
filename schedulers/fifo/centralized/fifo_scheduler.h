@@ -14,12 +14,12 @@
 #include "absl/time/time.h"
 #include "lib/agent.h"
 #include "lib/scheduler.h"
-#include "schedulers/fifo/Metric.h"
+#include "schedulers/fifo/TaskAllocatorWithProfiler.h"
 
 namespace ghost {
 
 // Store information about a scheduled task.
-struct FifoTask : public Task<> {
+struct FifoTask : public TaskWithMetric {
   enum class RunState {
     kBlocked,
     kQueued,
@@ -29,7 +29,7 @@ struct FifoTask : public Task<> {
   };
 
   FifoTask(Gtid fifo_task_gtid, ghost_sw_info sw_info)
-      : Task<>(fifo_task_gtid, sw_info), m(fifo_task_gtid) {}
+      : TaskWithMetric(fifo_task_gtid, sw_info) {}
   ~FifoTask() override {}
 
   bool blocked() const { return run_state == RunState::kBlocked; }
@@ -64,8 +64,6 @@ struct FifoTask : public Task<> {
   // Whether the last execution was preempted or not.
   bool preempted = false;
   bool prio_boost = false;
-
-  Metric m;
 };
 
 class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
