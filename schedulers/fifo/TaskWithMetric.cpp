@@ -40,7 +40,6 @@ namespace ghost
         if (newState == TaskState::kDied)
         {
             m.diedAt = currentTime;
-            fprintf(stderr, "DiedAt: %" PRId64 "\n", absl::ToUnixSeconds(m.diedAt));
         }
     }
 

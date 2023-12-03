@@ -136,8 +136,8 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
     CHECK(task->blocked());
   }
 
-  deadTasks.push_back(task->m);
   task->updateState("Died");
+  deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
   num_tasks_--;
 }
@@ -145,8 +145,8 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
 void FifoScheduler::TaskDead(FifoTask* task, const Message& msg) {
   CHECK_EQ(task->run_state, FifoTask::RunState::kBlocked);
 
-  deadTasks.push_back(task->m);
   task->updateState("Died");
+  deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
   num_tasks_--;
 }

@@ -162,16 +162,16 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
     enclave()->GetAgent(cpu)->Ping();
   }
   absl::MutexLock lock(&deadTasksMu_);
-  deadTasks.push_back(task->m);
   task->updateState("Died");
+  deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
 }
 
 void FifoScheduler::TaskDead(FifoTask* task, const Message& msg) {
   CHECK(task->blocked());
   absl::MutexLock lock(&deadTasksMu_);
-  deadTasks.push_back(task->m);
   task->updateState("Died");
+  deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
 }
 
