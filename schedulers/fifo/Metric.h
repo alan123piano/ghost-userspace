@@ -68,14 +68,14 @@ namespace ghost
             {
                 sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
                 if (sockfd == -1) {
-                    panic("error with socket")
+                    panic("error with socket");
                 }
 
                 memset(&server, 0, sizeof(server));
                 server.sin_family = AF_INET;
                 server.sin_port = htons(8000); // TODO: Orca is hardcoded to be at port 8000
                 struct hostent* sp = gethostbyname("localhost");
-                memcpy(&server.sin_addr, sp->h_addr_list[0], sp->h_length)
+                memcpy(&server.sin_addr, sp->h_addr_list[0], sp->h_length);
             }
 
             ~OrcaMessenger()
