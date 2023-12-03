@@ -12,6 +12,7 @@ enum class MessageType { Ack, SetScheduler, Metric };
 struct OrcaHeader {
     MessageType type;
 
+    OrcaHeader() {}
     OrcaHeader(MessageType type) : type(type) {}
 };
 
