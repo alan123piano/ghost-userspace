@@ -420,11 +420,13 @@ void FifoAgent::AgentThread() {
       {
         absl::MutexLock lock(&(scheduler_->deadTasksMu_));
         for(auto &m : res){
-          m.printResult(stderr);
+          if (verbose()) m.printResult(stderr);
+          m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
           printf("-- DEAD-- \n");
-          m.printResult(stderr);
+          if (verbose()) m.printResult(stderr);
+          m.sendMessageToOrca();
         }
         scheduler_->deadTasks.clear();
       }

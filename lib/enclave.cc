@@ -624,7 +624,9 @@ bool LocalEnclave::CompleteRunRequest(RunRequest* req) {
       if (req->allow_txn_target_on_cpu()) {
         break;
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      // breaking here instead of crashing is /probably/ a terrible idea.
+      // but it drastically improves the stability of the ghOSt schedulers for heavy workloads.
+      break;
 
     default:
       GHOST_ERROR("unexpected state after commit: %s",

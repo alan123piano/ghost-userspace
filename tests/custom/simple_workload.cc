@@ -54,8 +54,10 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
                                 int reqs_per_sec, int runtime_secs,
                                 int num_workers, double proportion_long_jobs) {
     std::cout << "Spawning worker threads..." << std::endl;
+    std::cerr << "Spawning worker threads..." << std::endl;
 
     int num_jobs = reqs_per_sec * runtime_secs;
+    int num_jobs_done = 0;
     std::vector<Job> jobs(num_jobs);
     std::atomic<bool> isdead(false);
     std::queue<Job *> work_q;
@@ -75,6 +77,11 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
                     }
                     job = work_q.front();
                     work_q.pop();
+
+                    ++num_jobs_done;
+                    if (num_jobs_done % 50000 == 0) {
+                        std::cerr << num_jobs_done << std::endl;
+                    }
                 }
 
                 auto start = steady_clock::now();
@@ -115,18 +122,41 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
     }
 
     // Shutdown workers
+    steady_clock::time_point shutdown_at = steady_clock::now();
     while (true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        std::lock_guard lg(work_q_m);
-        if (work_q.empty()) {
-            isdead = true;
-            break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+        // If we haven't shutdown after a timeout, then stop the experiment.
+        // Mark tail latency of remaining jobs as very large value
+        if (std::chrono::duration<double>(steady_clock::now() - shutdown_at)
+                .count() > 15.0) {
+            std::cout << "Test timed out." << std::endl;
+            std::cerr << "Test timed out." << std::endl;
+
+            {
+                std::lock_guard lg(work_q_m);
+                while (!work_q.empty()) {
+                    // mark tail latency as large value
+                    work_q.front()->finished =
+                        shutdown_at + std::chrono::minutes(5);
+                    work_q.pop();
+                }
+            }
+        }
+
+        {
+            std::lock_guard lg(work_q_m);
+            if (work_q.empty()) {
+                isdead = true;
+                break;
+            }
         }
     }
     for (const auto &t : worker_threads) {
         t->Join();
     }
     std::cout << "Finished running worker threads." << std::endl;
+    std::cerr << "Finished running worker threads." << std::endl;
 
     return jobs;
 }

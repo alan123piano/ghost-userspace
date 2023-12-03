@@ -26,7 +26,13 @@ struct SchedulerConfig {
 
 class Orca {
 public:
-    Orca() = default;
+    Orca() {
+        // set pipe fd's to dummy values
+        stdout_pipe_fd[0] = -1;
+        stdout_pipe_fd[1] = -1;
+        stderr_pipe_fd[0] = -1;
+        stderr_pipe_fd[1] = -1;
+    }
 
     ~Orca() {
         printf("Exiting Orca...\n");
@@ -42,28 +48,67 @@ public:
             terminate_child(curr_sched_pid);
         }
 
-        curr_sched_pid = run_scheduler(config);
+        curr_sched_pid = run_scheduler(config, stdout_pipe_fd, stderr_pipe_fd);
     }
 
+    // Returns file descriptor which contains stdout of scheduler process
+    int get_sched_stdout_fd() { return stdout_pipe_fd[0]; }
+
+    // Returns file descriptor which contains stderr of scheduler process
+    int get_sched_stderr_fd() { return stderr_pipe_fd[0]; }
+
 private:
+    int stdout_pipe_fd[2];
+    int stderr_pipe_fd[2];
     pid_t curr_sched_pid = 0;
 
-    static pid_t delegate_to_child(std::function<void()> work) {
+    static pid_t delegate_to_child(std::function<void()> work,
+                                   int *stdout_pipe_fd, int *stderr_pipe_fd) {
+        if (pipe(stdout_pipe_fd) == -1) {
+            panic("pipe");
+        }
+
+        if (pipe(stderr_pipe_fd) == -1) {
+            panic("pipe");
+        }
+
         pid_t child_pid = fork();
         if (child_pid == -1) {
             panic("fork");
         }
 
         if (child_pid == 0) {
+            // we are the child
+
             // set our process group id (pgid) to our own pid
             // this allows our parent to kill us
             if (setpgid(0, 0) == -1) {
                 panic("setpgid");
             }
 
+            // close read end of pipes
+            close(stdout_pipe_fd[0]);
+            close(stderr_pipe_fd[0]);
+
+            // redirect stdout to write end of pipe
+            // we do this by closing stdout, then calling dup on write end
+            // OS allocates lowest available fd (in this case, fd=1)
+            close(STDOUT_FILENO);
+            dup(stdout_pipe_fd[1]);
+
+            // redirect stderr to write end of pipe
+            close(STDERR_FILENO);
+            dup(stderr_pipe_fd[1]);
+
             work();
             exit(0);
         } else {
+            // we are the parent
+
+            // close write end of pipes
+            close(stdout_pipe_fd[1]);
+            close(stderr_pipe_fd[1]);
+
             return child_pid;
         }
     }
@@ -112,7 +157,8 @@ private:
 
     // Run a scheduling agent.
     // Returns the PID of the scheduler.
-    static pid_t run_scheduler(orca::SchedulerConfig config) {
+    static pid_t run_scheduler(orca::SchedulerConfig config,
+                               int *stdout_pipe_fd, int *stderr_pipe_fd) {
         // statically allocate memory for execv args
         // this is kinda sketchy but it should work, since only one scheduling
         // agent runs at a time
@@ -136,8 +182,7 @@ private:
         if (file_exists("/sys/fs/ghost/enclave_1")) {
             if (file_exists("/sys/fs/ghost/enclave_2")) {
                 // We expect to make one enclave at most, and to keep reusing it
-        for
-                // each scheduler agent
+                // for each scheduler agent
                 // If there is more than one enclave, something went wrong
                 panic("more enclaves than expected");
             }
@@ -168,10 +213,12 @@ private:
         }
         printf("\n");
 
-        return delegate_to_child([] {
-            execv(args[0], args);
-            panic("execv");
-        });
+        return delegate_to_child(
+            [] {
+                execv(args[0], args);
+                panic("execv");
+            },
+            stdout_pipe_fd, stderr_pipe_fd);
     }
 };
 

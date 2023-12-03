@@ -689,6 +689,7 @@ cc_library(
     copts = compiler_flags,
     deps = [
         ":agent",
+        ":orca_lib",
     ],
 )
 
@@ -724,6 +725,7 @@ cc_library(
         ":agent",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/time",
+        ":orca_lib",
     ],
 )
 
@@ -1358,3 +1360,36 @@ cc_binary(
 #         "@com_google_absl//absl/time",
 #     ],
 # )
+
+cc_library(
+    name = "orca_lib",
+    hdrs = [
+        "orca/event_signal.h",
+        "orca/helpers.h",
+        "orca/orca.h",
+        "orca/protocol.h",
+    ],
+    copts = compiler_flags,
+)
+
+cc_binary(
+    name = "orca",
+    srcs = [
+        "orca/orca.cpp",
+    ],
+    copts = compiler_flags,
+    deps = [
+        ":orca_lib",
+    ],
+)
+
+cc_binary(
+    name = "orca_client",
+    srcs = [
+        "orca/orca_client.cpp",
+    ],
+    copts = compiler_flags,
+    deps = [
+        ":orca_lib",
+    ],
+)
