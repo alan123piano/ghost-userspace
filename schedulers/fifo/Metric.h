@@ -72,6 +72,8 @@ namespace ghost
                     panic("error with socket");
                 }
 
+                printf("OrcaMessenger initialized sockfd=%d\n", sockfd);
+
                 memset(&server, 0, sizeof(server));
                 server.sin_family = AF_INET;
                 server.sin_port = htons(8000); // TODO: Orca is hardcoded to be at port 8000
@@ -87,6 +89,7 @@ namespace ghost
             // Send bytes to Orca.
             void sendBytes(const char* buf, size_t len)
             {
+                printf("sockfd=%d\n", sockfd);
                 ssize_t result = sendto(sockfd, buf, len, 0, (sockaddr*)&server, sizeof(server));
 
                 if (result <= 0)
