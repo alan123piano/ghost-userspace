@@ -181,6 +181,7 @@ int main(int argc, char *argv[]) {
                               << std::endl;
                 }
                 default:
+                    printf("Unknown UDP message type: %d\n", (int)header->type);
                     panic("unimplemented udp message type");
                 }
             }
