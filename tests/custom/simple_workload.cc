@@ -126,19 +126,19 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
     while (true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-        // If we haven't shutdown after 10 seconds, then stop the experiment.
+        // If we haven't shutdown after a timeout, then stop the experiment.
         // Mark tail latency of remaining jobs as very large value
         if (std::chrono::duration<double>(steady_clock::now() - shutdown_at)
-                .count() > 10.0) {
+                .count() > 15.0) {
             std::cout << "Test timed out." << std::endl;
             std::cerr << "Test timed out." << std::endl;
 
             {
                 std::lock_guard lg(work_q_m);
                 while (!work_q.empty()) {
-                    // mark tail latency as 30 seconds (arbitrary large value)
+                    // mark tail latency as large value
                     work_q.front()->finished =
-                        shutdown_at + std::chrono::seconds(30);
+                        shutdown_at + std::chrono::minutes(5);
                     work_q.pop();
                 }
             }
