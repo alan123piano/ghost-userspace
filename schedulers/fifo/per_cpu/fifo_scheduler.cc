@@ -419,6 +419,7 @@ void FifoAgent::AgentThread() {
           m.printResult(stderr);
         }
         for(auto &m : scheduler_->deadTasks){
+          printf("-- DEAD-- \n");
           m.printResult(stderr);
         }
         scheduler_->deadTasks.clear();
