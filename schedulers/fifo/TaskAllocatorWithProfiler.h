@@ -7,9 +7,8 @@
 
 namespace ghost
 {
-    template <typename TaskType>
     class SingleThreadMallocTaskAllocatorWithProfiler
-        : public SingleThreadMallocTaskAllocator<TaskType>
+        : public SingleThreadMallocTaskAllocator<TaskWithMetric>
     {
     public:
         void FreeTask(TaskWithMetric *task) override
@@ -19,12 +18,11 @@ namespace ghost
         }
 
     private:
-        using Parent = SingleThreadMallocTaskAllocator<TaskType>;
+        using Parent = SingleThreadMallocTaskAllocator<TaskWithMetric>;
     };
 
-    template <typename TaskType>
     class ThreadSafeMallocTaskAllocatorWithProfiler
-        : public ThreadSafeMallocTaskAllocator<TaskType>
+        : public ThreadSafeMallocTaskAllocator<TaskWithMetric>
     {
     public:
         void FreeTask(TaskWithMetric *task) override
@@ -35,7 +33,7 @@ namespace ghost
         }
 
     private:
-        using Base = SingleThreadMallocTaskAllocator<TaskType>;
+        using Base = SingleThreadMallocTaskAllocator<TaskWithMetric>;
     };
 
 }

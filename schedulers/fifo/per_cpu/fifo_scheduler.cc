@@ -11,7 +11,7 @@
 namespace ghost {
 
 FifoScheduler::FifoScheduler(Enclave* enclave, CpuList cpulist,
-                             std::shared_ptr<TaskAllocator<FifoTask>> allocator)
+                             std::shared_ptr<ThreadSafeMallocTaskAllocatorWithProfiler> allocator)
     : BasicDispatchScheduler(enclave, std::move(cpulist),
                              std::move(allocator)) {
   for (const Cpu& cpu : cpus()) {
@@ -388,7 +388,7 @@ void FifoRq::Erase(FifoTask* task) {
 
 std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(Enclave* enclave,
                                                           CpuList cpulist) {
-  auto allocator = std::make_shared<ThreadSafeMallocTaskAllocatorWithProfiler<FifoTask>>();
+  auto allocator = std::make_shared<ThreadSafeMallocTaskAllocatorWithProfiler>();
   auto scheduler = std::make_unique<FifoScheduler>(enclave, std::move(cpulist),
                                                    std::move(allocator));
   return scheduler;

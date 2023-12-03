@@ -101,7 +101,7 @@ class FifoRq {
 class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
  public:
   explicit FifoScheduler(Enclave* enclave, CpuList cpulist,
-                         std::shared_ptr<TaskAllocator<FifoTask>> allocator);
+                         std::shared_ptr<ThreadSafeMallocTaskAllocatorWithProfiler> allocator);
   ~FifoScheduler() final {}
 
   void Schedule(const Cpu& cpu, const StatusWord& sw);
