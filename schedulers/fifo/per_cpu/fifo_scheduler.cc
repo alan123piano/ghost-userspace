@@ -105,12 +105,14 @@ void FifoScheduler::TaskNew(FifoTask* task, const Message& msg) {
       static_cast<const ghost_msg_payload_task_new*>(msg.payload());
 
   task->seqnum = msg.seqnum();
+  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+                      /* update_elapsed_runtime= */ false);
   task->run_state = FifoTaskState::kBlocked;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
 
   if (payload->runnable) {
     task->run_state = FifoTaskState::kRunnable;
-    task->m.updateState(FifoTask::RunStateToString(task->run_state));
+    task->updateState(FifoTask::RunStateToString(task->run_state));
     Cpu cpu = AssignCpu(task);
     Migrate(task, cpu, msg.seqnum());
   } else {
@@ -125,7 +127,7 @@ void FifoScheduler::TaskRunnable(FifoTask* task, const Message& msg) {
 
   CHECK(task->blocked());
   task->run_state = FifoTaskState::kRunnable;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
 
   // A non-deferrable wakeup gets the same preference as a preempted task.
   // This is because it may be holding locks or resources needed by other
@@ -161,16 +163,16 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
     Cpu cpu = topology()->cpu(payload->cpu);
     enclave()->GetAgent(cpu)->Ping();
   }
-  task->m.updateState("Died");
   absl::MutexLock lock(&deadTasksMu_);
+  task->updateState("Died");
   deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
 }
 
 void FifoScheduler::TaskDead(FifoTask* task, const Message& msg) {
   CHECK(task->blocked());
-  task->m.updateState("Died");
   absl::MutexLock lock(&deadTasksMu_);
+  task->updateState("Died");
   deadTasks.push_back(task->m);
   allocator()->FreeTask(task);
 }
@@ -194,6 +196,8 @@ void FifoScheduler::TaskBlocked(FifoTask* task, const Message& msg) {
   const ghost_msg_payload_task_blocked* payload =
       static_cast<const ghost_msg_payload_task_blocked*>(msg.payload());
 
+  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+                      /* update_elapsed_runtime= */ true);
   TaskOffCpu(task, /*blocked=*/true, payload->from_switchto);
 
   if (payload->from_switchto) {
@@ -240,7 +244,7 @@ void FifoScheduler::TaskOffCpu(FifoTask* task, bool blocked,
 
   task->run_state =
       blocked ? FifoTaskState::kBlocked : FifoTaskState::kRunnable;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
 }
 
 void FifoScheduler::TaskOnCpu(FifoTask* task, Cpu cpu) {
@@ -250,7 +254,7 @@ void FifoScheduler::TaskOnCpu(FifoTask* task, Cpu cpu) {
   GHOST_DPRINT(3, stderr, "Task %s oncpu %d", task->gtid.describe(), cpu.id());
 
   task->run_state = FifoTaskState::kOnCpu;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
   task->cpu = cpu.id();
   task->preempted = false;
   task->prio_boost = false;
@@ -340,7 +344,7 @@ void FifoRq::Enqueue(FifoTask* task) {
   CHECK_EQ(task->run_state, FifoTaskState::kRunnable);
 
   task->run_state = FifoTaskState::kQueued;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
 
   absl::MutexLock lock(&mu_);
   if (task->prio_boost)
@@ -356,7 +360,7 @@ FifoTask* FifoRq::Dequeue() {
   FifoTask* task = rq_.front();
   CHECK(task->queued());
   task->run_state = FifoTaskState::kRunnable;
-  task->m.updateState(FifoTask::RunStateToString(task->run_state));
+  task->updateState(FifoTask::RunStateToString(task->run_state));
   rq_.pop_front();
   return task;
 }
@@ -371,7 +375,7 @@ void FifoRq::Erase(FifoTask* task) {
     if (rq_[pos] == task) {
       rq_.erase(rq_.cbegin() + pos);
       task->run_state = FifoTaskState::kRunnable;
-      task->m.updateState(FifoTask::RunStateToString(task->run_state));
+      task->updateState(FifoTask::RunStateToString(task->run_state));
       return;
     }
 
@@ -380,7 +384,7 @@ void FifoRq::Erase(FifoTask* task) {
       if (rq_[pos] == task) {
         rq_.erase(rq_.cbegin() + pos);
         task->run_state =  FifoTaskState::kRunnable;
-        task->m.updateState(FifoTask::RunStateToString(task->run_state));
+        task->updateState(FifoTask::RunStateToString(task->run_state));
         return;
       }
     }
@@ -420,6 +424,7 @@ void FifoAgent::AgentThread() {
           m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
+          printf("-- DEAD-- \n");
           if (verbose()) m.printResult(stderr);
           m.sendMessageToOrca();
         }

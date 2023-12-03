@@ -12,7 +12,7 @@
 
 #include "lib/agent.h"
 #include "lib/scheduler.h"
-#include "schedulers/fifo/Metric.h"
+#include "schedulers/fifo/TaskWithMetric.h"
 
 namespace ghost {
 
@@ -28,9 +28,9 @@ enum class FifoTaskState {
 // For CHECK and friends.
 std::ostream& operator<<(std::ostream& os, const FifoTaskState& state);
 
-struct FifoTask : public Task<> {
+struct FifoTask : public TaskWithMetric {
   explicit FifoTask(Gtid fifo_task_gtid, ghost_sw_info sw_info)
-      : Task<>(fifo_task_gtid, sw_info), m(fifo_task_gtid) {}
+      : TaskWithMetric(fifo_task_gtid, sw_info) {}
   ~FifoTask() override {}
 
   inline bool blocked() const { return run_state == FifoTaskState::kBlocked; }
@@ -61,8 +61,6 @@ struct FifoTask : public Task<> {
 
   FifoTaskState run_state = FifoTaskState::kBlocked;
   int cpu = -1;
-
-  Metric m;
 
   // Whether the last execution was preempted or not.
   bool preempted = false;
@@ -128,8 +126,8 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
     return num_tasks;
   }
 
-  std::vector<Metric> CollectMetric(){
-    std::vector<Metric> tmp; 
+  std::vector<TaskWithMetric::Metric> CollectMetric(){
+    std::vector<TaskWithMetric::Metric> tmp; 
     // Threadsafe by allocator's guarantee
     allocator()->ForEachTask([&tmp](Gtid gtid, const FifoTask* task) {
       tmp.push_back(task->m);
@@ -142,7 +140,7 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
   static constexpr int kDebugRunqueue = 1;
   static constexpr int kCountAllTasks = 2;
   absl::Mutex deadTasksMu_;
-  std::vector<Metric> deadTasks; 
+  std::vector<TaskWithMetric::Metric> deadTasks; 
 
  protected:
   void TaskNew(FifoTask* task, const Message& msg) final;

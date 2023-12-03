@@ -679,12 +679,12 @@ cc_library(
     srcs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.cc",
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
-        "schedulers/fifo/Metric.h",
-        "schedulers/fifo/Metric.cpp",
+        "schedulers/fifo/TaskWithMetric.h",
+        "schedulers/fifo/TaskWithMetric.cpp",
     ],
     hdrs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
-        "schedulers/fifo/Metric.h",
+        "schedulers/fifo/TaskWithMetric.h",
     ],
     copts = compiler_flags,
     deps = [
@@ -713,12 +713,12 @@ cc_library(
     srcs = [
         "schedulers/fifo/centralized/fifo_scheduler.cc",
         "schedulers/fifo/centralized/fifo_scheduler.h",
-        "schedulers/fifo/Metric.h",
-        "schedulers/fifo/Metric.cpp",
+        "schedulers/fifo/TaskWithMetric.h",
+        "schedulers/fifo/TaskWithMetric.cpp",
     ],
     hdrs = [
         "schedulers/fifo/centralized/fifo_scheduler.h",
-        "schedulers/fifo/Metric.h",
+        "schedulers/fifo/TaskWithMetric.h",
     ],
     copts = compiler_flags,
     deps = [
