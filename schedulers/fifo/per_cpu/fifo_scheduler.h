@@ -12,7 +12,7 @@
 
 #include "lib/agent.h"
 #include "lib/scheduler.h"
-#include "schedulers/fifo/TaskAllocatorWithProfiler.h"
+#include "schedulers/fifo/TaskWithMetric.h"
 
 namespace ghost {
 
@@ -101,7 +101,7 @@ class FifoRq {
 class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
  public:
   explicit FifoScheduler(Enclave* enclave, CpuList cpulist,
-                         std::shared_ptr<ThreadSafeMallocTaskAllocatorWithProfiler> allocator);
+                         std::shared_ptr<TaskAllocator<FifoTask>> allocator);
   ~FifoScheduler() final {}
 
   void Schedule(const Cpu& cpu, const StatusWord& sw);
@@ -126,8 +126,8 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
     return num_tasks;
   }
 
-  std::vector<Metric> CollectMetric(){
-    std::vector<Metric> tmp; 
+  std::vector<TaskWithMetric::Metric> CollectMetric(){
+    std::vector<TaskWithMetric::Metric> tmp; 
     // Threadsafe by allocator's guarantee
     allocator()->ForEachTask([&tmp](Gtid gtid, const FifoTask* task) {
       tmp.push_back(task->m);

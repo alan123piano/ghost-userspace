@@ -17,7 +17,7 @@ void FifoScheduler::CpuNotIdle(const Message& msg) { CHECK(0); }
 void FifoScheduler::CpuTimerExpired(const Message& msg) { CHECK(0); }
 
 FifoScheduler::FifoScheduler(Enclave* enclave, CpuList cpulist,
-                             std::shared_ptr<SingleThreadMallocTaskAllocatorWithProfiler> allocator,
+                             std::shared_ptr<TaskAllocator<FifoTask>> allocator,
                              int32_t global_cpu,
                              absl::Duration preemption_time_slice)
     : BasicDispatchScheduler(enclave, std::move(cpulist), std::move(allocator)),
@@ -137,6 +137,7 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
   }
 
   deadTasks.push_back(task->m);
+  task->updateState("Died");
   allocator()->FreeTask(task);
   num_tasks_--;
 }
@@ -145,6 +146,7 @@ void FifoScheduler::TaskDead(FifoTask* task, const Message& msg) {
   CHECK_EQ(task->run_state, FifoTask::RunState::kBlocked);
 
   deadTasks.push_back(task->m);
+  task->updateState("Died");
   allocator()->FreeTask(task);
   num_tasks_--;
 }
@@ -456,7 +458,7 @@ std::unique_ptr<FifoScheduler> SingleThreadFifoScheduler(
     Enclave* enclave, CpuList cpulist, int32_t global_cpu,
     absl::Duration preemption_time_slice) {
   auto allocator =
-      std::make_shared<SingleThreadMallocTaskAllocatorWithProfiler>();
+      std::make_shared<SingleThreadMallocTaskAllocator<FifoTask>>();
   auto scheduler = std::make_unique<FifoScheduler>(
       enclave, std::move(cpulist), std::move(allocator), global_cpu,
       preemption_time_slice);

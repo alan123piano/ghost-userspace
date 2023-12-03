@@ -11,7 +11,7 @@
 namespace ghost {
 
 FifoScheduler::FifoScheduler(Enclave* enclave, CpuList cpulist,
-                             std::shared_ptr<ThreadSafeMallocTaskAllocatorWithProfiler> allocator)
+                             std::shared_ptr<TaskAllocator<FifoTask>> allocator)
     : BasicDispatchScheduler(enclave, std::move(cpulist),
                              std::move(allocator)) {
   for (const Cpu& cpu : cpus()) {
@@ -163,6 +163,7 @@ void FifoScheduler::TaskDeparted(FifoTask* task, const Message& msg) {
   }
   absl::MutexLock lock(&deadTasksMu_);
   deadTasks.push_back(task->m);
+  task->updateState("Died");
   allocator()->FreeTask(task);
 }
 
@@ -170,6 +171,7 @@ void FifoScheduler::TaskDead(FifoTask* task, const Message& msg) {
   CHECK(task->blocked());
   absl::MutexLock lock(&deadTasksMu_);
   deadTasks.push_back(task->m);
+  task->updateState("Died");
   allocator()->FreeTask(task);
 }
 
@@ -388,7 +390,7 @@ void FifoRq::Erase(FifoTask* task) {
 
 std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(Enclave* enclave,
                                                           CpuList cpulist) {
-  auto allocator = std::make_shared<ThreadSafeMallocTaskAllocatorWithProfiler>();
+  auto allocator = std::make_shared<ThreadSafeMallocTaskAllocator<FifoTask>>();
   auto scheduler = std::make_unique<FifoScheduler>(enclave, std::move(cpulist),
                                                    std::move(allocator));
   return scheduler;

@@ -14,7 +14,7 @@
 #include "absl/time/time.h"
 #include "lib/agent.h"
 #include "lib/scheduler.h"
-#include "schedulers/fifo/TaskAllocatorWithProfiler.h"
+#include "schedulers/fifo/TaskWithMetric.h"
 
 namespace ghost {
 
