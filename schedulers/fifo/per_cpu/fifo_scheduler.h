@@ -13,6 +13,7 @@
 #include "lib/agent.h"
 #include "lib/scheduler.h"
 #include "schedulers/fifo/TaskWithMetric.h"
+#include "schedulers/fifo/ProfilingAgentConfig.h"
 
 namespace ghost {
 
@@ -183,22 +184,29 @@ std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(Enclave* enclave,
                                                           CpuList cpulist);
 class FifoAgent : public LocalAgent {
  public:
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler)
-      : LocalAgent(enclave, cpu), scheduler_(scheduler) {}
+  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler,int32_t _profiler_cpu)
+      : LocalAgent(enclave, cpu), scheduler_(scheduler), profiler_cpu(_profiler_cpu) {}
 
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return scheduler_; }
 
  private:
   FifoScheduler* scheduler_;
+  int32_t profiler_cpu;
 };
 
 template <class EnclaveType>
 class FullFifoAgent : public FullAgent<EnclaveType> {
  public:
-  explicit FullFifoAgent(AgentConfig config) : FullAgent<EnclaveType>(config) {
+  explicit FullFifoAgent(ProfilingAgentConfig config) : FullAgent<EnclaveType>(config),profiler_cpu(config.profiler_cpu.id()) {
     scheduler_ =
         MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
+        
+    if (!(*this->enclave_.cpus()).IsSet(profiler_cpu)) {
+      Cpu c = (*this->enclave_.cpus()).Front();
+      CHECK(c.valid());
+      profiler_cpu = c.id();
+    }
     this->StartAgentTasks();
     this->enclave_.Ready();
   }
@@ -229,6 +237,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
 
  private:
   std::unique_ptr<FifoScheduler> scheduler_;
+  int32_t profiler_cpu;
 };
 
 }  // namespace ghost
