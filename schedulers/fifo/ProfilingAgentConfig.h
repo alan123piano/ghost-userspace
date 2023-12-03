@@ -8,8 +8,8 @@ namespace ghost
     class ProfilingAgentConfig : public AgentConfig
     {
     public:
-        FifoConfig() {}
-        FifoConfig(Topology *topology, CpuList cpulist, Cpu profiler_cpu_)
+        ProfilingAgentConfig() {}
+        ProfilingAgentConfig(Topology *topology, CpuList cpulist, Cpu profiler_cpu_)
             : AgentConfig(topology, std::move(cpulist)),
               profiler_cpu(profiler_cpu_) {}
 
