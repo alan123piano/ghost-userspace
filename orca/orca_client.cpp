@@ -98,7 +98,7 @@ void handle_input(int port, const std::string &input) {
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         std::ostringstream oss;
-        for (int i = 2; i < argc; ++i) {
+        for (int i = 1; i < argc; ++i) {
             oss << argv[i] << " ";
         }
         handle_input(orca::PORT, oss.str());
