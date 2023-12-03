@@ -121,8 +121,8 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
 
   static const int kDebugRunqueue = 1;
 
-  std::vector<Metric> CollectMetric(){
-    std::vector<Metric> tmp; 
+  std::vector<TaskWithMetric::Metric> CollectMetric(){
+    std::vector<TaskWithMetric::Metric> tmp; 
     // Threadsafe by allocator's guarantee
     allocator()->ForEachTask([&tmp](Gtid gtid, const FifoTask* task) {
       tmp.push_back(task->m);
