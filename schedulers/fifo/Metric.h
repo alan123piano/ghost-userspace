@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "../../orca/protocol.h"
+#include "orca/protocol.h"
 
 namespace ghost
 {
