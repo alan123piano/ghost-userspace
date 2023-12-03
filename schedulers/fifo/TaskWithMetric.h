@@ -72,6 +72,7 @@ namespace ghost
 
         // WIP
         void updateRuntime();
-        void updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime){};
-    }
+        void updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime);
+    };
+}
 #endif
