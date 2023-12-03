@@ -38,7 +38,10 @@ namespace ghost
         m.currentState = newState;
         m.stateStarted = currentTime;
         if (newState == TaskState::kDied)
+        {
+            fprintf(stderr, "??");
             m.diedAt = currentTime;
+        }
     }
 
     void TaskWithMetric::updateRuntime()
