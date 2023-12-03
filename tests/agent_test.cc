@@ -296,12 +296,11 @@ TEST(AgentTest, RpcSerialization) {
   auto ap = AgentProcess<FullSimpleAgent<>, AgentConfig>(
       AgentConfig(MachineTopology(), MachineTopology()->all_cpus()));
 
-  std::unique_ptr<AgentRpcResponse> response =
-      ap.RpcWithResponse(kRpcSerialize);
-  ASSERT_EQ(response->response_code, 0);
+  const AgentRpcResponse& response = ap.RpcWithResponse(kRpcSerialize);
+  ASSERT_EQ(response.response_code, 0);
 
   absl::StatusOr<FullSimpleAgent<>::RpcTestData> data =
-      response->buffer.Deserialize<FullSimpleAgent<>::RpcTestData>();
+      response.buffer.Deserialize<FullSimpleAgent<>::RpcTestData>();
   ASSERT_EQ(data.status(), absl::OkStatus());
   EXPECT_EQ(data.value(), FullSimpleAgent<>::kRpcTestData);
 }
@@ -403,12 +402,10 @@ TEST(AgentTest, RpcStatusSerialization) {
   auto ap = AgentProcess<FullSimpleAgent<>, AgentConfig>(
       AgentConfig(MachineTopology(), MachineTopology()->all_cpus()));
 
-  std::unique_ptr<AgentRpcResponse> response =
-      ap.RpcWithResponse(kRpcSerializeStatus);
-  ASSERT_EQ(response->response_code, 0);
+  const AgentRpcResponse& response = ap.RpcWithResponse(kRpcSerializeStatus);
+  ASSERT_EQ(response.response_code, 0);
 
-  absl::StatusOr<TrivialStatus> status_or =
-      response->buffer.DeserializeStatus();
+  absl::StatusOr<TrivialStatus> status_or = response.buffer.DeserializeStatus();
   ASSERT_EQ(status_or.status(), absl::OkStatus());
   EXPECT_EQ(status_or.value().ToStatus(), absl::OkStatus());
 }
@@ -418,12 +415,11 @@ TEST(AgentTest, RpcStatusOrSerialization) {
   auto ap = AgentProcess<FullSimpleAgent<>, AgentConfig>(
       AgentConfig(MachineTopology(), MachineTopology()->all_cpus()));
 
-  std::unique_ptr<AgentRpcResponse> response =
-      ap.RpcWithResponse(kRpcSerializeStatusOr);
-  ASSERT_EQ(response->response_code, 0);
+  const AgentRpcResponse& response = ap.RpcWithResponse(kRpcSerializeStatusOr);
+  ASSERT_EQ(response.response_code, 0);
 
   absl::StatusOr<absl::StatusOr<int>> status_or =
-      response->buffer.DeserializeStatusOr<int>();
+      response.buffer.DeserializeStatusOr<int>();
   ASSERT_EQ(status_or.status(), absl::OkStatus());
   ASSERT_EQ(status_or.value().status(), absl::OkStatus());
   EXPECT_EQ(status_or.value().value(), 42);
@@ -498,10 +494,11 @@ class SpinningAgent : public LocalAgent {
 class TickConfig : public AgentConfig {
  public:
   TickConfig(Topology* topology, CpuList cpus, int numa_node)
-      : AgentConfig(topology, cpus) {
-    numa_node_ = numa_node;
-    tick_config_ = CpuTickConfig::kAllTicks;
+      : AgentConfig(topology, cpus), numa_node_(numa_node) {
+        tick_config_ = CpuTickConfig::kAllTicks;
   }
+
+  int numa_node_;
 };
 
 // Drain 'channel' and return the number of CPU_TICK messages.

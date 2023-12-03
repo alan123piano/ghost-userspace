@@ -484,94 +484,53 @@ void CfsScheduler::TaskDead(CfsTask* task, const Message& msg) {
 void CfsScheduler::TaskYield(CfsTask* task, const Message& msg) {
   const ghost_msg_payload_task_yield* payload =
       static_cast<const ghost_msg_payload_task_yield*>(msg.payload());
-  Cpu cpu = topology()->cpu(MyCpu());
+  Cpu cpu = topology()->cpu(payload->cpu);
   CpuState* cs = cpu_state(cpu);
   PrintDebugTaskMessage("TaskYield", cs, task);
   cs->run_queue.mu_.AssertHeld();
 
-  // If this task is not from a switchto chain, it should be the current task on
-  // this CPU.
-  if (!payload->from_switchto) {
-    CHECK_EQ(cs->current, task);
-  }
+  // Kick the task off-cpu.
+  CHECK_EQ(cs->current, task);
+  PutPrevTask();
 
-  // The task should be in kDequeued state because only a currently running
-  // task can yield.
-  CHECK(task->task_state.OnRqDequeued());
-
-  // Updates the task state accordingly. This is safe because this task should
-  // be associated with this CPU's agent and protected by this CPU's RQ lock.
-  PutPrevTask(task);
-
-  // This task was the last task in a switchto chain on a remote CPU. We should
-  // ping the remote CPU to schedule a new task.
-  if (payload->cpu != cpu.id()) {
-    CHECK(payload->from_switchto);
-    PingCpu(topology()->cpu(payload->cpu));
+  if (payload->from_switchto) {
+    Cpu cpu = topology()->cpu(payload->cpu);
+    PingCpu(cpu);
   }
 }
 
 void CfsScheduler::TaskBlocked(CfsTask* task, const Message& msg) {
   const ghost_msg_payload_task_blocked* payload =
       static_cast<const ghost_msg_payload_task_blocked*>(msg.payload());
-  Cpu cpu = topology()->cpu(MyCpu());
+  Cpu cpu = topology()->cpu(payload->cpu);
   CpuState* cs = cpu_state(cpu);
   PrintDebugTaskMessage("TaskBlocked", cs, task);
   cs->run_queue.mu_.AssertHeld();
 
-  // If this task is not from a switchto chain, it should be the current task on
-  // this CPU.
-  if (!payload->from_switchto) {
-    CHECK_EQ(cs->current, task);
-  }
-
-  // Updates the task state accordingly. This is safe because this task should
-  // be associated with this CPU's agent and protected by this CPU's RQ lock.
-  if (cs->current == task) {
-    cs->current = nullptr;
-  }
-
+  CHECK_EQ(cs->current, task);
   task->task_state.SetState(CfsTaskState::State::kBlocked);
-  // No need to update OnRq state to kDequeued because the task should already
-  // be in kDequeued state because only a currently running task can block and
-  // it should be in kDequeued state.
-  CHECK(task->task_state.OnRqDequeued());
 
-  // This task was the last task in a switchto chain on a remote CPU. We should
-  // ping the remote CPU to schedule a new task.
-  if (payload->cpu != cpu.id()) {
-    CHECK(payload->from_switchto);
-    PingCpu(topology()->cpu(payload->cpu));
+  if (payload->from_switchto) {
+    Cpu cpu = topology()->cpu(payload->cpu);
+    PingCpu(cpu);
   }
 }
 
 void CfsScheduler::TaskPreempted(CfsTask* task, const Message& msg) {
   const ghost_msg_payload_task_preempt* payload =
       static_cast<const ghost_msg_payload_task_preempt*>(msg.payload());
-  Cpu cpu = topology()->cpu(MyCpu());
+  Cpu cpu = topology()->cpu(payload->cpu);
   CpuState* cs = cpu_state(cpu);
   PrintDebugTaskMessage("TaskPreempted", cs, task);
   cs->run_queue.mu_.AssertHeld();
 
-  // If this task is not from a switchto chain, it should be the current task on
-  // this CPU.
-  if (!payload->from_switchto) {
-    CHECK_EQ(cs->current, task);
-  }
+  // Kick the task off-cpu.
+  CHECK_EQ(cs->current, task);
+  PutPrevTask();
 
-  // The task should be in kDequeued state because only a currently running
-  // task can be preempted.
-  CHECK(task->task_state.OnRqDequeued());
-
-  // Updates the task state accordingly. This is safe because this task should
-  // be associated with this CPU's agent and protected by this CPU's RQ lock.
-  PutPrevTask(task);
-
-  // This task was the last task in a switchto chain on a remote CPU. We should
-  // ping the remote CPU to schedule a new task.
-  if (payload->cpu != cpu.id()) {
-    CHECK(payload->from_switchto);
-    PingCpu(topology()->cpu(payload->cpu));
+  if (payload->from_switchto) {
+    Cpu cpu = topology()->cpu(payload->cpu);
+    PingCpu(cpu);
   }
 }
 
@@ -580,12 +539,8 @@ void CfsScheduler::TaskSwitchto(CfsTask* task, const Message& msg) {
   PrintDebugTaskMessage("TaskSwitchTo", cs, task);
   cs->run_queue.mu_.AssertHeld();
 
-  CHECK_EQ(cs->current, task);
   task->task_state.SetState(CfsTaskState::State::kBlocked);
-  // No need to update OnRq state to kDequeued because the task should be on
-  // CPU and therefore in kDequeued state.
-  CHECK(task->task_state.OnRqDequeued());
-  cs->current = nullptr;
+  task->task_state.SetOnRq(CfsTaskState::OnRq::kDequeued);
 }
 
 // Disable thread safety analysis as this function is called with rq lock held
@@ -608,16 +563,12 @@ void CfsScheduler::CheckPreemptTick(const Cpu& cpu)
   }
 }
 
-void CfsScheduler::PutPrevTask(CfsTask* task) {
+void CfsScheduler::PutPrevTask() {
   CpuState* cs = &cpu_states_[MyCpu()];
   cs->run_queue.mu_.AssertHeld();
 
-  CHECK_NE(task, nullptr);
-
-  // If this task is currently running, kick it off-cpu.
-  if (cs->current == task) {
-    cs->current = nullptr;
-  }
+  CfsTask* task = cs->current;
+  cs->current = nullptr;
 
   // We have a notable deviation from the upstream's behavior here. In upstream,
   // put_prev_task does not update the state, while we update the state here.
@@ -827,7 +778,7 @@ void CfsScheduler::CfsSchedule(const Cpu& cpu, BarrierToken agent_barrier,
   cs->current = next;
 
   if (next) {
-    DPRINT_CFS(3, absl::StrFormat("[%s]: Picked via PickNextTask",
+    DPRINT_CFS(2, absl::StrFormat("[%s]: Picked via PickNextTask",
                                   next->gtid.describe()));
 
     req->Open({

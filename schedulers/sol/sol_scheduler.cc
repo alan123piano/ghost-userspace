@@ -292,10 +292,6 @@ void SolScheduler::TaskPreempted(SolTask* task, const Message& msg) {
 }
 
 void SolScheduler::TaskSwitchto(SolTask* task, const Message& msg) {
-  if (task->pending()) {
-    SyncTaskState(task);
-  }
-
   TaskOffCpu(task, /*blocked=*/true, /*from_switchto=*/false);
 }
 

@@ -3,8 +3,6 @@
 
 # Runs the RocksDB and Antagonist experiments on ghOSt and CFS (Linux Completely Fair Scheduler).
 
-package(default_applicable_licenses = ["//:license"])
-
 licenses(["notice"])
 
 load("@subpar//:subpar.bzl", "par_binary")

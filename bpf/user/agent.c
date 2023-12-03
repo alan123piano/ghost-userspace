@@ -5,7 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include "bpf/user/agent.h"
-#include "lib/ghost_uapi.h"
+#include "kernel/ghost_uapi.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -17,16 +17,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
-#ifndef GHOST_SELECT_ABI
-#include "bpf/user/bpf_schedghostidle.skel.h"
-#elif GHOST_SELECT_ABI == 84
-#include "bpf/user/84/bpf_schedghostidle.skel.h"
-#elif GHOST_SELECT_ABI == 90
-#include "bpf/user/90/bpf_schedghostidle.skel.h"
-#else
-#error "missing an abi?"
-#endif
-
+#include "bpf/user/schedghostidle_bpf.skel.h"
 #include "third_party/iovisor_bcc/trace_helpers.h"
 
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
@@ -95,7 +86,6 @@ static int insert_prog(int ctl_fd, struct bpf_program *prog)
 	case BPF_GHOST_SCHED_PNT:
 	case BPF_GHOST_MSG_SEND:
 	case BPF_GHOST_SELECT_RQ:
-	case BPF_GHOST_HALT_POLL:
 		ret = bpf_link_create(prog_fd, ctl_fd, eat, NULL);
 		break;
 	default:
@@ -195,17 +185,17 @@ void agent_bpf_destroy(void)
 
 static void *sgi_make_skel_obj(void)
 {
-	struct bpf_schedghostidle_bpf *obj;
+	struct schedghostidle_bpf *obj;
 
-	obj = bpf_schedghostidle_bpf__open_and_load();
+	obj = schedghostidle_bpf__open_and_load();
 	if (!obj) {
 		fprintf(stderr, "failed to open/load schedghostidle\n");
 		return NULL;
 	}
 
-	if (bpf_schedghostidle_bpf__attach(obj)) {
+	if (schedghostidle_bpf__attach(obj)) {
 		fprintf(stderr, "failed to attach schedghostidle\n");
-		bpf_schedghostidle_bpf__destroy(obj);
+		schedghostidle_bpf__destroy(obj);
 		return NULL;
 	}
 	return obj;
@@ -216,7 +206,7 @@ static void *sgi_make_skel_obj(void)
 
 static void sgi_output(void *obj, FILE *to)
 {
-	struct bpf_schedghostidle_bpf *sgi_obj = obj;
+	struct schedghostidle_bpf *sgi_obj = obj;
 	unsigned int nr_cpus = libbpf_num_possible_cpus();
 	unsigned int hist[SGI_NR_SLOTS] = {0};
 	uint64_t *count;
@@ -247,7 +237,7 @@ static void sgi_output(void *obj, FILE *to)
 
 static void sgi_reset(void *obj)
 {
-	struct bpf_schedghostidle_bpf *sgi_obj = obj;
+	struct schedghostidle_bpf *sgi_obj = obj;
 	unsigned int nr_cpus = libbpf_num_possible_cpus();
 	uint64_t *zeros;
 	int fd = bpf_map__fd(sgi_obj->maps.hist);
