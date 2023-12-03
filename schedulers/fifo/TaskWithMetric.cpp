@@ -87,7 +87,7 @@ namespace ghost
             return TaskState::kQueued;
         else if (state == "OnCpu")
             return TaskState::kOnCpu;
-        else if (state == "yielding")
+        else if (state == "Yielding")
             return TaskState::kYielding;
         else if (state == "Died")
             return TaskState::kDied;
@@ -114,5 +114,21 @@ namespace ghost
 
         double stdev = sqrt(accum / (v.size() - 1));
         return stdev;
+    }
+
+    void Metric::sendMessageToOrca()
+    {
+        orca::OrcaMetric msg;
+        msg.gtid = gtid.id();
+        msg.created_at_us = absl::ToUnixSeconds(createdAt) * 1000;
+        msg.block_time_us = absl::ToInt64Microseconds(blockTime);
+        msg.runnable_time_us = absl::ToInt64Microseconds(runnableTime);
+        msg.queued_time_us = absl::ToInt64Microseconds(queuedTime);
+        msg.on_cpu_time_us = absl::ToInt64Microseconds(onCpuTime);
+        msg.yielding_time_us = absl::ToInt64Microseconds(yieldingTime);
+        msg.died_at_us = absl::ToUnixSeconds(diedAt) * 1000;
+        msg.preempt_count = preemptCount;
+        
+        messenger.sendBytes((const char *)&msg, sizeof(msg));
     }
 }
