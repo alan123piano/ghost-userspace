@@ -58,6 +58,15 @@ namespace ghost
         m.runtime = new_runtime;
     }
 
+    void TaskWithMetric::updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime)
+    {
+        if (updateElapsedRuntime)
+        {
+            m.elapsedRuntime += new_runtime - m.runtime;
+        }
+        m.runtime = new_runtime;
+    }
+
     void TaskWithMetric::Metric::printResult(FILE *to)
     {
         absl::FPrintF(to, "=============== Result: tid(%" PRId64 ") ==================\n", gtid.id());

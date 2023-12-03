@@ -69,7 +69,9 @@ namespace ghost
 
         Metric m;
         void updateState(std::string_view _newState);
-        void updateRuntime(); // WIP
-    };
-}
+
+        // WIP
+        void updateRuntime();
+        void updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime){};
+    }
 #endif

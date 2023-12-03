@@ -105,6 +105,8 @@ void FifoScheduler::TaskNew(FifoTask* task, const Message& msg) {
       static_cast<const ghost_msg_payload_task_new*>(msg.payload());
 
   task->seqnum = msg.seqnum();
+  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+                      /* update_elapsed_runtime= */ true);
   task->run_state = FifoTaskState::kBlocked;
   task->updateState(FifoTask::RunStateToString(task->run_state));
 
@@ -193,7 +195,9 @@ void FifoScheduler::TaskYield(FifoTask* task, const Message& msg) {
 void FifoScheduler::TaskBlocked(FifoTask* task, const Message& msg) {
   const ghost_msg_payload_task_blocked* payload =
       static_cast<const ghost_msg_payload_task_blocked*>(msg.payload());
-
+      
+  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+                      /* update_elapsed_runtime= */ true);
   TaskOffCpu(task, /*blocked=*/true, payload->from_switchto);
 
   if (payload->from_switchto) {
