@@ -132,7 +132,7 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
     return tmp; 
   }
 
-  std::vector<Metric> deadTasks; 
+  std::vector<TaskWithMetric::Metric> deadTasks; 
 
  private:
   struct CpuState {
