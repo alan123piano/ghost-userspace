@@ -4,6 +4,7 @@
 
 namespace orca {
 
+constexpr int PORT = 8000;
 constexpr size_t MAX_MESSAGE_SIZE = 1024;
 
 enum class MessageType { Ack, SetScheduler, Metric };

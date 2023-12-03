@@ -21,12 +21,6 @@
 #include "protocol.h"
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <port>\n", argv[0]);
-        return 0;
-    }
-    int port = atoi(argv[1]);
-
     // TCP socket
     int tcpfd = socket(AF_INET, SOCK_STREAM, 0);
     if (tcpfd == -1) {
@@ -50,7 +44,7 @@ int main(int argc, char *argv[]) {
     memset(&saddr, 0, sizeof(saddr));
     saddr.sin_family = AF_INET;
     saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    saddr.sin_port = htons(port);
+    saddr.sin_port = htons(orca::PORT);
 
     // bind TCP
     if (bind(tcpfd, (struct sockaddr *)&saddr, sizeof(saddr)) == -1) {
@@ -80,7 +74,7 @@ int main(int argc, char *argv[]) {
 
     EventSignal<int> sched_ready;
 
-    printf("Orca listening on port %d...\n", port);
+    printf("Orca listening on port %d...\n", orca::PORT);
     while (true) {
         int sched_stdout = orca_agent->get_sched_stdout_fd();
         int sched_stderr = orca_agent->get_sched_stderr_fd();
@@ -179,6 +173,10 @@ int main(int argc, char *argv[]) {
                               << ", died_at_us=" << msg->died_at_us
                               << ", preempt_count=" << msg->preempt_count
                               << std::endl;
+
+                    // TODO: do stuff based on metric
+
+                    break;
                 }
                 default:
                     printf("Unknown UDP message type: %d\n", (int)header->type);

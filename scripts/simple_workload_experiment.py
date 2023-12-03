@@ -6,23 +6,19 @@ from decimal import Decimal
 import subprocess
 from typing import List, Tuple
 
+ORCA_PORT = 8000
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--orca_port", type=int, required=True, help="the port of the running Orca server"
-)
 parser.add_argument(
     "--out_file", type=str, required=True, help="output file for experiment results"
 )
 
 
-def set_scheduler(
-    orca_port: int, sched_type: str, preemption_interval_us: int = 0
-) -> None:
+def set_scheduler(sched_type: str, preemption_interval_us: int = 0) -> None:
     "Set the scheduler via orca_client."
 
     if sched_type != "cfs":
-        cmdargs = ["bazel-bin/orca_client", str(orca_port), "setsched", sched_type]
+        cmdargs = ["bazel-bin/orca_client", str(ORCA_PORT), "setsched", sched_type]
         if preemption_interval_us > 0:
             cmdargs.append(str(preemption_interval_us))
         subprocess.run(cmdargs, check=True)
@@ -64,19 +60,13 @@ def run_experiment(
     return ([csvline.split(", ") for csvline in csvlines], timed_out)
 
 
-def run_sched_exp(
-    orca_port: int, sched_type: str, proportion_long_jobs: Decimal
-) -> List[List[str]]:
+def run_sched_exp(sched_type: str, proportion_long_jobs: Decimal) -> List[List[str]]:
     "Run the experiment for given scheduler/workload."
 
     rows: List[List[str]] = []
 
     preemption_interval_us = 500 if sched_type == "cFCFS" else 0
-    set_scheduler(
-        orca_port=orca_port,
-        sched_type=sched_type,
-        preemption_interval_us=preemption_interval_us,
-    )
+    set_scheduler(sched_type=sched_type, preemption_interval_us=preemption_interval_us)
 
     for throughput in range(30000, 300000 + 1, 30000):
         print(
@@ -118,7 +108,6 @@ def run_sched_exp(
 
 def main() -> None:
     args = parser.parse_args()
-    orca_port: int = args.orca_port
     out_file: str = args.out_file
 
     csvrows: List[List[str]] = []
@@ -140,7 +129,6 @@ def main() -> None:
             except:
                 print(f"Starting experiment for {sched_type}...")
                 rows = run_sched_exp(
-                    orca_port=orca_port,
                     sched_type=sched_type,
                     proportion_long_jobs=proportion_long_jobs,
                 )

@@ -74,7 +74,7 @@ namespace ghost
 
                 memset(&serverAddr, 0, sizeof(serverAddr));
                 serverAddr.sin_family = AF_INET;
-                serverAddr.sin_port = htons(8000); // TODO: Orca is hardcoded to be at port 8000
+                serverAddr.sin_port = htons(orca::PORT);
                 struct hostent* sp = gethostbyname("localhost");
                 memcpy(&serverAddr.sin_addr, sp->h_addr_list[0], sp->h_length);
             }

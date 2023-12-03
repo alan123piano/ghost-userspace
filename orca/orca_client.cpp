@@ -96,18 +96,12 @@ void handle_input(int port, const std::string &input) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        printf("Usage: %s <port>\n", argv[0]);
-        return 0;
-    }
-    int port = atoi(argv[1]);
-
-    if (argc > 2) {
+    if (argc > 1) {
         std::ostringstream oss;
         for (int i = 2; i < argc; ++i) {
             oss << argv[i] << " ";
         }
-        handle_input(port, oss.str());
+        handle_input(orca::PORT, oss.str());
         return 0;
     }
 
@@ -115,6 +109,6 @@ int main(int argc, char *argv[]) {
 
     std::string input;
     while (std::getline(std::cin, input)) {
-        handle_input(port, input);
+        handle_input(orca::PORT, input);
     }
 }
