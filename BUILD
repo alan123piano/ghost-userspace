@@ -685,6 +685,7 @@ cc_library(
     hdrs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/Metric.h",
+        "orca/orca.h",
         "orca/protocol.h",
     ],
     copts = compiler_flags,
@@ -719,6 +720,7 @@ cc_library(
     hdrs = [
         "schedulers/fifo/centralized/fifo_scheduler.h",
         "schedulers/fifo/Metric.h",
+        "orca/orca.h",
         "orca/protocol.h",
     ],
     copts = compiler_flags,
