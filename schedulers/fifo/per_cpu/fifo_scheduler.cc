@@ -412,14 +412,16 @@ void FifoAgent::AgentThread() {
 
     if(profile_peroid.Edge()){
       auto res = scheduler_->CollectMetric();
-      if(verbose() && debug_out.Edge())
+      if(debug_out.Edge())
       {
         absl::MutexLock lock(&(scheduler_->deadTasksMu_));
         for(auto &m : res){
-          m.printResult(stderr);
+          if (verbose()) m.printResult(stderr);
+          m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
-          m.printResult(stderr);
+          if (verbose()) m.printResult(stderr);
+          m.sendMessageToOrca();
         }
         scheduler_->deadTasks.clear();
       }

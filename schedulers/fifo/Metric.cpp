@@ -63,4 +63,20 @@ namespace ghost
             return TaskState::unknown;
         }
     }
+
+    void Metric::sendMessageToOrca()
+    {
+        orca::OrcaMetric msg;
+        msg.gtid = gtid.id();
+        msg.created_at_us = absl::ToUnixMicroseconds(createdAt);
+        msg.block_time_us = absl::ToInt64Microseconds(blockTime);
+        msg.runnable_time_us = absl::ToInt64Microseconds(runnableTime);
+        msg.queued_time_us = absl::ToInt64Microseconds(queuedTime);
+        msg.on_cpu_time_us = absl::ToInt64Microseconds(onCpuTime);
+        msg.yielding_time_us = absl::ToInt64Microseconds(yieldingTime);
+        msg.died_at_us = absl::ToUnixMicroseconds(diedAt);
+        msg.preempt_count_us = preemptCount;
+        
+        messenger.sendBytes(&msg, sizeof(msg));
+    }
 }

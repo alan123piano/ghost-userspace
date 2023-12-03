@@ -501,13 +501,15 @@ void FifoAgent::AgentThread() {
 
       if(profile_peroid.Edge()){
         auto res = global_scheduler_->CollectMetric();
-        if(verbose() && debug_out.Edge())
+        if(debug_out.Edge())
         {
           for(auto &m : res){
-            m.printResult(stderr);
+            if (verbose()) m.printResult(stderr);
+            m.sendMessageToOrca();
           }
           for(auto &m : global_scheduler_->deadTasks){
-            m.printResult(stderr);
+            if (verbose()) m.printResult(stderr);
+            m.sendMessageToOrca();
           }
           global_scheduler_->deadTasks.clear();
         }
