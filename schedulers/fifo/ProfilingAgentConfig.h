@@ -1,3 +1,5 @@
+#pragma once
+
 #include "lib/enclave.h"
 #include "lib/topology.h"
 

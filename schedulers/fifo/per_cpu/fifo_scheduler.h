@@ -216,7 +216,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
   }
 
   std::unique_ptr<Agent> MakeAgent(const Cpu& cpu) override {
-    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get());
+    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get(), profiler_cpu);
   }
 
   void RpcHandler(int64_t req, const AgentRpcArgs& args,

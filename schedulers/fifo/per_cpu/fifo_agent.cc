@@ -15,11 +15,13 @@
 #include "schedulers/fifo/per_cpu/fifo_scheduler.h"
 
 ABSL_FLAG(std::string, ghost_cpus, "1-5", "cpulist");
+ABSL_FLAG(int32_t, profiler_cpu, -1,
+          "Profiler cpu. If -1, then defaults to the first cpu in <cpus>");
 ABSL_FLAG(std::string, enclave, "", "Connect to preexisting enclave directory");
 
 namespace ghost {
 
-static void ParseAgentConfig(AgentConfig* config) {
+static void ParseAgentConfig(ProfilingAgentConfig* config) {
   CpuList ghost_cpus =
       MachineTopology()->ParseCpuStr(absl::GetFlag(FLAGS_ghost_cpus));
   CHECK(!ghost_cpus.Empty());
@@ -27,6 +29,15 @@ static void ParseAgentConfig(AgentConfig* config) {
   Topology* topology = MachineTopology();
   config->topology_ = topology;
   config->cpus_ = ghost_cpus;
+  int profiler_cpu = absl::GetFlag(FLAGS_profiler_cpu);
+  if (profiler_cpu < 0) {
+    CHECK_EQ(globalcpu, -1);
+    globalcpu = ghost_cpus.Front().id();
+    absl::SetFlag(&FLAGS_globalcpu, globalcpu);
+  }
+  CHECK(ghost_cpus.IsSet(profiler_cpu));
+
+  config->profiler_cpu = topology->cpu(profiler_cpu);
   std::string enclave = absl::GetFlag(FLAGS_enclave);
   if (!enclave.empty()) {
     int fd = open(enclave.c_str(), O_PATH);
@@ -41,7 +52,7 @@ int main(int argc, char* argv[]) {
   absl::InitializeSymbolizer(argv[0]);
   absl::ParseCommandLine(argc, argv);
 
-  ghost::AgentConfig config;
+  ghost::ProfilingAgentConfig config;
   ghost::ParseAgentConfig(&config);
 
   printf("Initializing...\n");
