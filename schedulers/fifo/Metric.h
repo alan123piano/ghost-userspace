@@ -72,11 +72,11 @@ namespace ghost
                     panic("error with socket");
                 }
 
-                memset(&server, 0, sizeof(server));
-                server.sin_family = AF_INET;
-                server.sin_port = htons(8000); // TODO: Orca is hardcoded to be at port 8000
+                memset(&serverAddr, 0, sizeof(serverAddr));
+                serverAddr.sin_family = AF_INET;
+                serverAddr.sin_port = htons(8000); // TODO: Orca is hardcoded to be at port 8000
                 struct hostent* sp = gethostbyname("localhost");
-                memcpy(&server.sin_addr, sp->h_addr_list[0], sp->h_length);
+                memcpy(&serverAddr.sin_addr, sp->h_addr_list[0], sp->h_length);
             }
 
             ~OrcaMessenger()
@@ -87,7 +87,7 @@ namespace ghost
             // Send bytes to Orca.
             void sendBytes(const char* buf, size_t len)
             {
-                ssize_t result = sendto(sockfd, buf, len, 0, (sockaddr*)&server, sizeof(server));
+                ssize_t result = sendto(sockfd, buf, len, 0, (sockaddr*)&serverAddr, sizeof(serverAddr));
 
                 if (result <= 0)
                 {
@@ -97,7 +97,7 @@ namespace ghost
 
         private:
             int sockfd;
-            struct sockaddr_in server;
+            struct sockaddr_in serverAddr;
         };
 
         OrcaMessenger messenger;
