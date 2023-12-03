@@ -88,7 +88,7 @@ def run_sched_exp(
             sched_type=sched_type,
             throughput=throughput,
             runtime=5,
-            num_workers=10,
+            num_workers=1,
             proportion_long_jobs=proportion_long_jobs,
         )
 
