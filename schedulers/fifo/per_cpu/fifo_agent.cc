@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
   // Using new so we can destruct the object before printing Done
   auto uap = new ghost::AgentProcess<ghost::FullFifoAgent<ghost::LocalEnclave>,
-                                     ghost::AgentConfig>(config);
+                                     ghost::ProfilingAgentConfig>(config);
 
   ghost::GhostHelper()->InitCore();
   printf("Initialization complete, ghOSt active.\n");
