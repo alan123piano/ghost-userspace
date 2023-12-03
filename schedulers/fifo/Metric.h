@@ -67,7 +67,7 @@ namespace ghost
         public:
             OrcaMessenger()
             {
-                sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+                sockfd = socket(AF_INET, SOCK_DGRAM, 0);
                 if (sockfd == -1) {
                     panic("error with socket");
                 }
