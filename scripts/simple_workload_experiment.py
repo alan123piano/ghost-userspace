@@ -22,7 +22,7 @@ def set_scheduler(
     "Set the scheduler via orca_client."
 
     if sched_type != "cfs":
-        cmdargs = ["scripts/orca_client.sh", str(orca_port), "setsched", sched_type]
+        cmdargs = ["bazel-bin/orca_client", str(orca_port), "setsched", sched_type]
         if preemption_interval_us > 0:
             cmdargs.append(str(preemption_interval_us))
         subprocess.run(cmdargs, check=True)
