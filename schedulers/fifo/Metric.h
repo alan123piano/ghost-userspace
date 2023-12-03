@@ -83,6 +83,7 @@ namespace ghost
 
             ~OrcaMessenger()
             {
+                printf("OrcaMessenger releasing sockfd=%d\n", sockfd);
                 close(sockfd);
             }
 
