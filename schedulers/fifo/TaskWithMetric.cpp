@@ -116,7 +116,7 @@ namespace ghost
         return stdev;
     }
 
-    void Metric::sendMessageToOrca()
+    void TaskWithMetric::Metric::sendMessageToOrca()
     {
         orca::OrcaMetric msg;
         msg.gtid = gtid.id();

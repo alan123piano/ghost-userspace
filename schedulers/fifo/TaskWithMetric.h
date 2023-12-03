@@ -73,6 +73,9 @@ namespace ghost
             }
             void printResult(FILE *to);
             static double stddev(const std::vector<Metric> &v);
+
+            // Send results to Orca
+            void sendMessageToOrca();
         };
 
         Metric m;
@@ -81,9 +84,6 @@ namespace ghost
         // WIP
         void updateRuntime();
         void updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime);
-
-        // Send results to Orca
-        void sendMessageToOrca();
 
     private:
         // An abstraction for a UDP socket which allows sending messages to Orca
