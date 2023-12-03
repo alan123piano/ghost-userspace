@@ -178,19 +178,16 @@ private:
         arglist.push_back("0-7");
 
         // Check if there is an enclave to attach to
-        /*
         if (file_exists("/sys/fs/ghost/enclave_1")) {
             if (file_exists("/sys/fs/ghost/enclave_2")) {
                 // We expect to make one enclave at most, and to keep reusing it
-        for
-                // each scheduler agent
+                // for each scheduler agent
                 // If there is more than one enclave, something went wrong
                 panic("more enclaves than expected");
             }
             arglist.push_back("--enclave");
             arglist.push_back("/sys/fs/ghost/enclave_1");
         }
-        */
 
         if (config.type != orca::SchedulerConfig::SchedulerType::dFCFS &&
             config.preemption_interval_us >= 0) {
