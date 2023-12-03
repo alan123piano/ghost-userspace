@@ -12,7 +12,7 @@ class ExpResult:
     preemption_interval_us: int
     throughput: int
     proportion_long_jobs: Decimal
-    short_99_9_pct: float
+    latency: float
 
 
 def read_csv(filename: str) -> list[ExpResult]:
@@ -36,7 +36,7 @@ def read_csv(filename: str) -> list[ExpResult]:
                     proportion_long_jobs=Decimal(
                         row[idx_of_keys["proportion_long_jobs"]]
                     ),
-                    short_99_9_pct=float(row[idx_of_keys["short_99.9_pct"]]),
+                    latency=float(row[idx_of_keys["long_99_pct"]]),
                 )
             )
 
@@ -45,7 +45,7 @@ def read_csv(filename: str) -> list[ExpResult]:
 
 def main() -> None:
     results: list[ExpResult] = []
-    resultsdir = "run3"
+    resultsdir = "run4"
     for fname in os.listdir(resultsdir):
         fpath = os.path.join(resultsdir, fname)
         if os.path.isfile(fpath):
@@ -63,7 +63,7 @@ def main() -> None:
         m: dict[tuple[str, int], list[float]] = {}
         for row in rows:
             k = (row.sched_type, row.throughput)
-            v = row.short_99_9_pct
+            v = row.latency
             if k not in m:
                 m[k] = []
             m[k].append(v)
@@ -78,7 +78,7 @@ def main() -> None:
             ax.plot(xs, ys, label=sched_type)
 
         ax.set_xlabel("Throughput (reqs/sec)")
-        ax.set_ylabel("99.9%% latency")
+        ax.set_ylabel("Latency")
         ax.legend()
         ax.set_title(title)
 
