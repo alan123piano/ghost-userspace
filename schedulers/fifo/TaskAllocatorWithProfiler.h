@@ -27,7 +27,7 @@ namespace ghost
     public:
         void FreeTask(TaskWithMetric *task) override
         {
-            absl::MutexLock lock(&Parent::mu_);
+            absl::MutexLock lock(&mu_);
             task->updateState("Died");
             Base::FreeTask(task); // non-guarded free task
         }

@@ -28,9 +28,9 @@ enum class FifoTaskState {
 // For CHECK and friends.
 std::ostream& operator<<(std::ostream& os, const FifoTaskState& state);
 
-struct FifoTask : public TaskWithProfiler {
+struct FifoTask : public TaskWithMetric {
   explicit FifoTask(Gtid fifo_task_gtid, ghost_sw_info sw_info)
-      : TaskWithProfiler(fifo_task_gtid, sw_info) {}
+      : TaskWithMetric(fifo_task_gtid, sw_info) {}
   ~FifoTask() override {}
 
   inline bool blocked() const { return run_state == FifoTaskState::kBlocked; }
