@@ -59,9 +59,9 @@ namespace ghost
     void TaskWithMetric::Metric::printResult(FILE *to)
     {
         absl::FPrintF(to, "=============== Result: tid(%" PRId64 ") ==================\n", gtid.id());
-        absl::FPrintF(to, "BlockTime: %" PRId64 "\nRunnableTime: %" PRId64 "\nQueuedTime: %" PRId64 "\nonCpuTime: %" PRId64 "\nyieldingTime: %" PRId64 "\n",
+        absl::FPrintF(to, "BlockTime: %" PRId64 "\nRunnableTime: %" PRId64 "\nQueuedTime: %" PRId64 "\nonCpuTime: %" PRId64 "\nyieldingTime: %" PRId64 "\nruntime: %" PRId64 "\nelapsedRuntime: %" PRId64 "\n",
                       absl::ToInt64Nanoseconds(blockTime), absl::ToInt64Nanoseconds(runnableTime), absl::ToInt64Nanoseconds(queuedTime),
-                      absl::ToInt64Nanoseconds(onCpuTime), absl::ToInt64Nanoseconds(yieldingTime));
+                      absl::ToInt64Nanoseconds(onCpuTime), absl::ToInt64Nanoseconds(yieldingTime), absl::ToInt64Nanoseconds(runtime), absl::ToInt64Nanoseconds(elapsedRuntime));
         absl::FPrintF(to, "CreatedAt: %" PRId64 ", DiedAt: %" PRId64 "\n", absl::ToUnixSeconds(createdAt), absl::ToUnixSeconds(diedAt));
         absl::FPrintF(to, "---------------------------------\n");
     }
