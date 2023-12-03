@@ -87,12 +87,7 @@ namespace ghost
             // Send bytes to Orca.
             void sendBytes(const char* buf, size_t len)
             {
-                ssize_t result = sendto(sockfd, buf, len, 0, (sockaddr*)&serverAddr, sizeof(serverAddr));
-
-                if (result <= 0)
-                {
-                    panic("sendto");
-                }
+                sendto(sockfd, buf, len, 0, (sockaddr*)&serverAddr, sizeof(serverAddr));
             }
 
         private:
