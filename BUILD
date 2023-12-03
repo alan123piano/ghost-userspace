@@ -681,12 +681,10 @@ cc_library(
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/TaskWithMetric.h",
         "schedulers/fifo/TaskWithMetric.cpp",
-        "schedulers/fifo/TaskAllocatorWithProfiler.h",
     ],
     hdrs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/TaskWithMetric.h",
-        "schedulers/fifo/TaskAllocatorWithProfiler.h",
     ],
     copts = compiler_flags,
     deps = [
@@ -716,12 +714,10 @@ cc_library(
         "schedulers/fifo/centralized/fifo_scheduler.h",
         "schedulers/fifo/TaskWithMetric.h",
         "schedulers/fifo/TaskWithMetric.cpp",
-        "schedulers/fifo/TaskAllocatorWithProfiler.h",
     ],
     hdrs = [
         "schedulers/fifo/centralized/fifo_scheduler.h",
         "schedulers/fifo/TaskWithMetric.h",
-        "schedulers/fifo/TaskAllocatorWithProfiler.h",
     ],
     copts = compiler_flags,
     deps = [
