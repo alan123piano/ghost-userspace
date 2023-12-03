@@ -25,8 +25,8 @@ namespace ghost
             m.queuedTime += d;
             break;
         case TaskState::kOnCpu:
-            if (newState == TaskState::kBlocked || newState == TaskState::kYielding)
-                updateRuntime();
+            // if (newState == TaskState::kBlocked || newState == TaskState::kYielding)
+            //     updateRuntime();
             m.onCpuTime += d;
             break;
         case TaskState::kYielding:
@@ -60,7 +60,7 @@ namespace ghost
 
     void TaskWithMetric::updateTaskRuntime(absl::Duration new_runtime, bool update_elapsed_runtime)
     {
-        if (updateElapsedRuntime)
+        if (update_elapsed_runtime)
         {
             m.elapsedRuntime += new_runtime - m.runtime;
         }
