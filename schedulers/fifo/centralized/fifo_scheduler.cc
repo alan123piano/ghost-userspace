@@ -456,7 +456,7 @@ std::unique_ptr<FifoScheduler> SingleThreadFifoScheduler(
     Enclave* enclave, CpuList cpulist, int32_t global_cpu,
     absl::Duration preemption_time_slice) {
   auto allocator =
-      std::make_shared<SingleThreadMallocTaskAllocatorWithProfiler>();
+      std::make_shared<SingleThreadMallocTaskAllocatorWithProfiler<FifoTask>>();
   auto scheduler = std::make_unique<FifoScheduler>(
       enclave, std::move(cpulist), std::move(allocator), global_cpu,
       preemption_time_slice);
