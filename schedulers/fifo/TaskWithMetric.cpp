@@ -25,6 +25,8 @@ namespace ghost
             m.queuedTime += d;
             break;
         case TaskState::kOnCpu:
+            if (newState == TaskState::kBlocked || newState == TaskState::kYielding)
+                updateRuntime();
             m.onCpuTime += d;
             break;
         case TaskState::kYielding:
@@ -39,16 +41,20 @@ namespace ghost
             m.diedAt = currentTime;
     }
 
-    // void TaskWithMetric::updateRuntime(bool updateElapsedRuntime)
-    // {
-    //     absl::Duration new_runtime = absl::Nanoseconds(status_word.runtime());
-    //     CHECK_GE(new_runtime, m.runtime);
-    //     if (updateElapsedRuntime)
-    //     {
-    //         m.elapsedRuntime += new_runtime - m.runtime;
-    //     }
-    //     m.runtime = new_runtime;
-    // }
+    void TaskWithMetric::updateRuntime()
+    {
+        // Note that the runtime in the status word is updated when the task is taken
+        // off of the CPU (e.g., on a block, yield, preempt, etc.). Additionally,
+        // `GhostHelper()->GetTaskRuntime()` does not need to acquire a runqueue lock
+        // when the task is off of the CPU.
+        absl::Duration new_runtime = absl::Nanoseconds(status_word.runtime());
+        CHECK_GE(new_runtime, m.runtime);
+        // if (updateElapsedRuntime)
+        // {
+        m.elapsedRuntime += new_runtime - m.runtime;
+        // }
+        m.runtime = new_runtime;
+    }
 
     void TaskWithMetric::Metric::printResult(FILE *to)
     {

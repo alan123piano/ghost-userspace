@@ -69,7 +69,7 @@ namespace ghost
 
         Metric m;
         void updateState(std::string_view _newState);
-        // void updateRuntime(bool updateElapsedRuntime); // WIP
+        void updateRuntime(); // WIP
     };
 }
 #endif
