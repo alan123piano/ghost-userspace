@@ -63,14 +63,13 @@ namespace ghost
 
             Metric() : blockTime(absl::ZeroDuration()), runnableTime(absl::ZeroDuration()),
                        queuedTime(absl::ZeroDuration()), onCpuTime(absl::ZeroDuration()), yieldingTime(absl::ZeroDuration()),
-                       runtime(absl::ZeroDuration()), elapsedRuntime(absl::ZeroDuration()) {}
+                       runtime(absl::ZeroDuration()), elapsedRuntime(absl::ZeroDuration()), preemptCount(0) {}
 
             Metric(Gtid _gtid) : gtid(_gtid), createdAt(absl::Now()), blockTime(absl::ZeroDuration()), runnableTime(absl::ZeroDuration()),
                                  queuedTime(absl::ZeroDuration()), onCpuTime(absl::ZeroDuration()), yieldingTime(absl::ZeroDuration()),
-                                 runtime(absl::ZeroDuration()), elapsedRuntime(absl::ZeroDuration()),
-                                 currentState(TaskState::kCreated), stateStarted(createdAt)
-            {
-            }
+                                 runtime(absl::ZeroDuration()), elapsedRuntime(absl::ZeroDuration()), diedAt(absl::InfiniteFuture()), preemptCount(0),
+                                 currentState(TaskState::kCreated), stateStarted(createdAt) {}
+
             void printResult(FILE *to);
             static double stddev(const std::vector<Metric> &v);
         };

@@ -414,7 +414,7 @@ void FifoAgent::AgentThread() {
   while (!Finished() || !scheduler_->Empty(cpu())) {
     scheduler_->Schedule(cpu(), status_word());
 
-    if(profile_peroid.Edge()){
+    if(profile_peroid.Edge() && cpu().id() == this->profiler_cpu){
       auto res = scheduler_->CollectMetric();
       if(debug_out.Edge())
       {
