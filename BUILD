@@ -680,7 +680,7 @@ cc_library(
         "schedulers/fifo/per_cpu/fifo_scheduler.cc",
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/TaskWithMetric.h",
-        "schedulers/fifo/ProfilingAgentConfig.h"
+        "schedulers/fifo/ProfilingAgentConfig.h",
         "schedulers/fifo/TaskWithMetric.cpp",
     ],
     hdrs = [
