@@ -31,9 +31,9 @@ static void ParseAgentConfig(ProfilingAgentConfig* config) {
   config->cpus_ = ghost_cpus;
   int profiler_cpu = absl::GetFlag(FLAGS_profiler_cpu);
   if (profiler_cpu < 0) {
-    CHECK_EQ(globalcpu, -1);
-    globalcpu = ghost_cpus.Front().id();
-    absl::SetFlag(&FLAGS_globalcpu, globalcpu);
+    CHECK_EQ(profiler_cpu, -1);
+    profiler_cpu = ghost_cpus.Front().id();
+    absl::SetFlag(&FLAGS_profiler_cpu, profiler_cpu);
   }
   CHECK(ghost_cpus.IsSet(profiler_cpu));
 
