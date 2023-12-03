@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include "orca/protocol.h"
+#include "orca/helpers.h"
 
 namespace ghost
 {
@@ -97,11 +98,6 @@ namespace ghost
         private:
             int sockfd;
             struct sockaddr_in server;
-
-            void panic(const char *s) {
-                perror(s);
-                exit(EXIT_FAILURE);
-            }
         };
 
         OrcaMessenger messenger;

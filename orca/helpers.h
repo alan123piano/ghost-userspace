@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-void panic(const char *s) {
+inline void panic(const char *s) {
     perror(s);
     exit(EXIT_FAILURE);
 }
 
-void send_full(int sockfd, const char *buf, size_t len) {
+inline void send_full(int sockfd, const char *buf, size_t len) {
     size_t sent = 0;
     do {
         ssize_t sval = send(sockfd, buf + sent, len - sent, 0);
@@ -20,7 +20,7 @@ void send_full(int sockfd, const char *buf, size_t len) {
     } while (sent < len);
 }
 
-void recv_full(int connectionfd, char *buf, size_t len) {
+inline void recv_full(int connectionfd, char *buf, size_t len) {
     size_t recvd = 0;
     ssize_t rval;
     do {
