@@ -1913,7 +1913,7 @@ TEST(ApiTest, GhostCloneGhost) {
   Topology* topology = MachineTopology();
 
   auto ap = AgentProcess<FullFifoAgent<LocalEnclave>, ghost::ProfilingAgentConfig>(
-      AgentConfig(topology, topology->ToCpuList(std::vector<int>{kCpuNum})));
+      ghost::ProfilingAgentConfig(topology, topology->ToCpuList(std::vector<int>{kCpuNum})));
 
   // Verify that a ghost thread implicitly clones itself in the ghost
   // scheduling class.
