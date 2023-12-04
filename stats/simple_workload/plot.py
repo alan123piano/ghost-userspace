@@ -36,7 +36,7 @@ def read_csv(filename: str) -> list[ExpResult]:
                     proportion_long_jobs=Decimal(
                         row[idx_of_keys["proportion_long_jobs"]]
                     ),
-                    latency=float(row[idx_of_keys["long_99_pct"]]),
+                    latency=float(row[idx_of_keys["short_99_pct"]]),
                 )
             )
 
@@ -48,7 +48,7 @@ def main() -> None:
     resultsdir = "run4"
     for fname in os.listdir(resultsdir):
         fpath = os.path.join(resultsdir, fname)
-        if os.path.isfile(fpath):
+        if os.path.isfile(fpath) and fpath.endswith(".txt"):
             results += read_csv(fpath)
 
     # Want to plot  : throughput vs. short_99_9_pct (tail latency).
