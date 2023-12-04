@@ -184,8 +184,9 @@ std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(Enclave* enclave,
                                                           CpuList cpulist);
 class FifoAgent : public LocalAgent {
  public:
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler,int32_t _profiler_cpu)
-      : LocalAgent(enclave, cpu), scheduler_(scheduler), profiler_cpu(_profiler_cpu) {}
+  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler /*,int32_t _profiler_cpu*/ )
+      : LocalAgent(enclave, cpu), scheduler_(scheduler) /*, profiler_cpu(_profiler_cpu) */
+      {}
 
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return scheduler_; }
@@ -198,7 +199,7 @@ class FifoAgent : public LocalAgent {
 template <class EnclaveType>
 class FullFifoAgent : public FullAgent<EnclaveType> {
  public:
-  explicit FullFifoAgent(ProfilingAgentConfig config) : FullAgent<EnclaveType>(config),profiler_cpu(config.profiler_cpu.id()) {
+  explicit FullFifoAgent(ProfilingAgentConfig config) : FullAgent<EnclaveType>(config)/*,profiler_cpu(config.profiler_cpu.id())*/ {
     scheduler_ =
         MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
         
@@ -216,7 +217,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
   }
 
   std::unique_ptr<Agent> MakeAgent(const Cpu& cpu) override {
-    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get(), profiler_cpu);
+    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get() /*, profiler_cpu*/ );
   }
 
   void RpcHandler(int64_t req, const AgentRpcArgs& args,
