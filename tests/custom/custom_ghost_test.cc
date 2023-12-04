@@ -15,7 +15,7 @@ int main() {
             ghost::GhostThread::KernelScheduler::kGhost, [&ctr, threadId]() {
                 for (int i = 0; i < 100; ++i) {
                     std::this_thread::sleep_for(
-                        std::chrono::millseconds(1));
+                        std::chrono::milliseconds(1));
                     ctr = ctr + 1;
                 }
             }));
