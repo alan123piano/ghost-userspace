@@ -5,6 +5,8 @@
 #include "absl/strings/str_format.h"
 #include "lib/scheduler.h"
 
+#include <inttypes.h>
+
 namespace ghost
 {
     struct TaskWithMetric : public Task<>
