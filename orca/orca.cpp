@@ -220,19 +220,4 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
-    /**
-     * Pseudocode:
-     *
-     *  Start CFS in ghOst.
-     *  While True:
-     *      Receive data from bidirectional socket.
-     *      Do some computation on data to determine best scheduler.
-     *      Switch scheduler if needed.
-     *
-     *  While Recv(recvbuf, udpsocket):
-     *      Handle data from socket.
-     *      Switch scheduler if needed.
-     */
-    // }
 }
