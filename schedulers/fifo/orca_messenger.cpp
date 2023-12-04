@@ -13,5 +13,5 @@ void OrcaMessenger::sendMessageToOrca(const ghost::TaskWithMetric::Metric &m)
     msg.died_at_us = absl::ToUnixMicros(m.diedAt);
     msg.preempt_count = m.preemptCount;
 
-    messenger.sendBytes((const char *)&msg, sizeof(msg));
+    sendBytes((const char *)&msg, sizeof(msg));
 }
