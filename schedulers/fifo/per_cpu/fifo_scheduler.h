@@ -14,6 +14,7 @@
 #include "lib/scheduler.h"
 #include "schedulers/fifo/TaskWithMetric.h"
 #include "schedulers/fifo/ProfilingAgentConfig.h"
+#include "schedulers/fifo/orca_messenger.h"
 
 namespace ghost {
 
@@ -184,29 +185,27 @@ std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(Enclave* enclave,
                                                           CpuList cpulist);
 class FifoAgent : public LocalAgent {
  public:
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler,int32_t _profiler_cpu)
-      : LocalAgent(enclave, cpu), scheduler_(scheduler), profiler_cpu(_profiler_cpu) {}
+  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler ,int32_t _profiler_cpu, OrcaMessenger* _orcaMessenger)
+      : LocalAgent(enclave, cpu), scheduler_(scheduler) , profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger)
+      {}
 
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return scheduler_; }
 
  private:
   FifoScheduler* scheduler_;
+  OrcaMessenger* orcaMessenger;
   int32_t profiler_cpu;
 };
 
 template <class EnclaveType>
 class FullFifoAgent : public FullAgent<EnclaveType> {
  public:
-  explicit FullFifoAgent(ProfilingAgentConfig config) : FullAgent<EnclaveType>(config),profiler_cpu(config.profiler_cpu.id()) {
+  explicit FullFifoAgent(ProfilingAgentConfig config) : FullAgent<EnclaveType>(config),profiler_cpu(config.profiler_cpu) {
     scheduler_ =
         MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
         
-    if (!(*this->enclave_.cpus()).IsSet(profiler_cpu)) {
-      Cpu c = (*this->enclave_.cpus()).Front();
-      CHECK(c.valid());
-      profiler_cpu = c.id();
-    }
+    orcaMessenger = std::make_unique<OrcaMessenger>();
     this->StartAgentTasks();
     this->enclave_.Ready();
   }
@@ -216,7 +215,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
   }
 
   std::unique_ptr<Agent> MakeAgent(const Cpu& cpu) override {
-    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get(), profiler_cpu);
+    return std::make_unique<FifoAgent>(&this->enclave_, cpu, scheduler_.get(), profiler_cpu, orcaMessenger.get());
   }
 
   void RpcHandler(int64_t req, const AgentRpcArgs& args,
@@ -237,6 +236,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
 
  private:
   std::unique_ptr<FifoScheduler> scheduler_;
+  std::unique_ptr<OrcaMessenger> orcaMessenger;
   int32_t profiler_cpu;
 };
 

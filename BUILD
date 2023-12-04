@@ -679,19 +679,17 @@ cc_library(
     srcs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.cc",
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
-        "schedulers/fifo/TaskWithMetric.h",
-        "schedulers/fifo/ProfilingAgentConfig.h",
-        "schedulers/fifo/TaskWithMetric.cpp",
     ],
     hdrs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/ProfilingAgentConfig.h",
-        "schedulers/fifo/TaskWithMetric.h",
     ],
     copts = compiler_flags,
     deps = [
         ":agent",
         ":orca_lib",
+        ":profiler",
+        ":orca_messenger"
     ],
 )
 
@@ -715,12 +713,9 @@ cc_library(
     srcs = [
         "schedulers/fifo/centralized/fifo_scheduler.cc",
         "schedulers/fifo/centralized/fifo_scheduler.h",
-        "schedulers/fifo/TaskWithMetric.h",
-        "schedulers/fifo/TaskWithMetric.cpp",
     ],
     hdrs = [
         "schedulers/fifo/centralized/fifo_scheduler.h",
-        "schedulers/fifo/TaskWithMetric.h",
     ],
     copts = compiler_flags,
     deps = [
@@ -728,6 +723,7 @@ cc_library(
         "@com_google_absl//absl/strings:str_format",
         "@com_google_absl//absl/time",
         ":orca_lib",
+        ":profiler"
     ],
 )
 
@@ -1369,15 +1365,50 @@ cc_library(
         "orca/event_signal.h",
         "orca/helpers.h",
         "orca/orca.h",
-        "orca/protocol.h",
+        "orca/protocol.h"
     ],
     copts = compiler_flags,
+)
+
+cc_library(
+    name = "profiler",
+    srcs = [
+        "schedulers/fifo/ProfilingAgentConfig.h",
+        "schedulers/fifo/TaskWithMetric.h",
+        "schedulers/fifo/TaskWithMetric.cpp",
+    ],
+    hdrs = [
+        "schedulers/fifo/ProfilingAgentConfig.h",
+        "schedulers/fifo/TaskWithMetric.h",
+    ],
+    copts = compiler_flags,
+    deps = [
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_absl//absl/time",
+        ":agent"
+    ]
+)
+
+cc_library(
+    name = "orca_messenger",
+    srcs = [
+        "schedulers/fifo/orca_messenger.cpp",
+        "schedulers/fifo/orca_messenger.h",
+    ],
+    hdrs = [
+        "schedulers/fifo/orca_messenger.h",
+    ],
+    copts = compiler_flags,
+    deps = [
+        ":profiler",
+        ":orca_lib"
+    ]
 )
 
 cc_binary(
     name = "orca",
     srcs = [
-        "orca/orca.cpp",
+        "orca/orca.cpp"
     ],
     copts = compiler_flags,
     deps = [

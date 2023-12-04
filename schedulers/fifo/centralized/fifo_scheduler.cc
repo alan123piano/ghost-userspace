@@ -507,11 +507,11 @@ void FifoAgent::AgentThread() {
         {
           for(auto &m : res){
             if (verbose()) m.printResult(stderr);
-            m.sendMessageToOrca();
+            // m.sendMessageToOrca();
           }
           for(auto &m : global_scheduler_->deadTasks){
             if (verbose()) m.printResult(stderr);
-            m.sendMessageToOrca();
+            // m.sendMessageToOrca();
           }
           global_scheduler_->deadTasks.clear();
         }

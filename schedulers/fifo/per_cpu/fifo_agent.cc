@@ -29,6 +29,7 @@ static void ParseAgentConfig(ProfilingAgentConfig* config) {
   Topology* topology = MachineTopology();
   config->topology_ = topology;
   config->cpus_ = ghost_cpus;
+
   int profiler_cpu = absl::GetFlag(FLAGS_profiler_cpu);
   if (profiler_cpu < 0) {
     CHECK_EQ(profiler_cpu, -1);
@@ -36,8 +37,8 @@ static void ParseAgentConfig(ProfilingAgentConfig* config) {
     absl::SetFlag(&FLAGS_profiler_cpu, profiler_cpu);
   }
   CHECK(ghost_cpus.IsSet(profiler_cpu));
+  config->profiler_cpu = profiler_cpu;
 
-  config->profiler_cpu = topology->cpu(profiler_cpu);
   std::string enclave = absl::GetFlag(FLAGS_enclave);
   if (!enclave.empty()) {
     int fd = open(enclave.c_str(), O_PATH);
