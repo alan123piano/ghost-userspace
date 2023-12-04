@@ -11,13 +11,13 @@ namespace ghost
         ProfilingAgentConfig() {}
 
         ProfilingAgentConfig(Topology *topology, CpuList cpulist)
-            : AgentConfig(topology, std::move(cpulist)), profiler_cpu(topology->cpu(cpulist.Front().id())) {}
+            : AgentConfig(topology, std::move(cpulist)) /*, profiler_cpu(topology->cpu(cpulist.Front().id()))*/ {}
 
         ProfilingAgentConfig(Topology *topology, CpuList cpulist, Cpu profiler_cpu_)
-            : AgentConfig(topology, std::move(cpulist)),
-              profiler_cpu(profiler_cpu_) {}
+            : AgentConfig(topology, std::move(cpulist)) {}
+        // , profiler_cpu(profiler_cpu_) {}
 
-        Cpu profiler_cpu{Cpu::UninitializedType::kUninitialized};
+        // Cpu profiler_cpu{Cpu::UninitializedType::kUninitialized};
     };
 
 }
