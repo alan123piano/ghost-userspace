@@ -1944,8 +1944,8 @@ TEST(ApiTest, GhostCloneGhost) {
 TEST(ApiTest, SchedEnterGhostGtid) {
   Topology* topology = MachineTopology();
 
-  auto ap = AgentProcess<FullFifoAgent<LocalEnclave>, AgentConfig>(
-      AgentConfig(topology, topology->ToCpuList(std::vector<int>{0})));
+  auto ap = AgentProcess<FullFifoAgent<LocalEnclave>, ghost::ProfilingAgentConfig>(
+      ghost::ProfilingAgentConfig(topology, topology->ToCpuList(std::vector<int>{0})));
 
   GhostThread t(GhostThread::KernelScheduler::kCfs, [] {
     EXPECT_THAT(sched_getscheduler(/*pid=*/0), Eq(0));
