@@ -117,7 +117,8 @@ namespace ghost
     }
 
     void TaskWithMetric::Metric::sendMessageToOrca()
-    {
+    {   
+        std::cout << "sending mesesage"
         orca::OrcaMetric msg;
         msg.gtid = gtid.id();
         msg.created_at_us = absl::ToUnixMicros(createdAt);
