@@ -65,6 +65,10 @@ int main(int argc, char *argv[]) {
     static std::unique_ptr<orca::Orca> orca_agent;
     orca_agent = std::make_unique<orca::Orca>();
 
+    // run dFCFS by default
+    orca_agent->set_scheduler(orca::SchedulerConfig{
+        .type = orca::SchedulerConfig::SchedulerType::dFCFS});
+
     signal(SIGINT, [](int signum) {
         // call Orca destructor
         orca_agent = nullptr;
