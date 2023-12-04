@@ -9,8 +9,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "protocol.h"
-#include "helpers.h"
+#include "orca/protocol.h"
+#include "orca/helpers.h"
 #include "schedulers/fifo/TaskWithMetric.h"
 
 // An abstraction for a UDP socket which allows sending messages to Orca
