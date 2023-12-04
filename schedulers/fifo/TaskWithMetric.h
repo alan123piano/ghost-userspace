@@ -75,7 +75,7 @@ namespace ghost
             static double stddev(const std::vector<Metric> &v);
 
             // Send results to Orca
-            void sendMessageToOrca();
+            // void sendMessageToOrca();
 
         private:
             // An abstraction for a UDP socket which allows sending messages to Orca
@@ -113,7 +113,7 @@ namespace ghost
                 struct sockaddr_in serverAddr;
             };
 
-            OrcaMessenger messenger;
+            // OrcaMessenger messenger;
         };
 
         Metric m;
