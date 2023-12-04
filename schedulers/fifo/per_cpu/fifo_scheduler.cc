@@ -406,7 +406,7 @@ void FifoAgent::AgentThread() {
     printf("Agent tid:=%d\n", gtid().tid());
   }
   // if(verbose() == 1){
-    // printf("Agent cpu:=%d, profiler cpu %d\n", cpu().id(), profiler_cpu);
+  printf("Agent cpu:=%d, profiler cpu %d\n", cpu().id(), profiler_cpu);
   // }
   SignalReady();
   WaitForEnclaveReady();
