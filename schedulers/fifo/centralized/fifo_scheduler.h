@@ -15,6 +15,7 @@
 #include "lib/agent.h"
 #include "lib/scheduler.h"
 #include "schedulers/fifo/TaskWithMetric.h"
+#include "schedulers/fifo/orca_messenger.h"
 
 namespace ghost {
 
@@ -201,14 +202,15 @@ std::unique_ptr<FifoScheduler> SingleThreadFifoScheduler(
 // global_scheduler->GetGlobalCPU callback.
 class FifoAgent : public LocalAgent {
  public:
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* global_scheduler)
-      : LocalAgent(enclave, cpu), global_scheduler_(global_scheduler) {}
+  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* global_scheduler, OrcaMessenger* om)
+      : LocalAgent(enclave, cpu), global_scheduler_(global_scheduler), orcaMessenger(om) {}
 
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return global_scheduler_; }
 
  private:
   FifoScheduler* global_scheduler_;
+  OrcaMessenger* orcaMessenger;
 };
 
 class FifoConfig : public AgentConfig {
@@ -233,6 +235,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
     global_scheduler_ = SingleThreadFifoScheduler(
         &this->enclave_, *this->enclave_.cpus(), config.global_cpu_.id(),
         config.preemption_time_slice_);
+    orcaMessenger = std::make_unique<OrcaMessenger>();
     this->StartAgentTasks();
     this->enclave_.Ready();
   }
@@ -261,7 +264,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
 
   std::unique_ptr<Agent> MakeAgent(const Cpu& cpu) override {
     return std::make_unique<FifoAgent>(&this->enclave_, cpu,
-                                       global_scheduler_.get());
+                                       global_scheduler_.get(), orcaMessenger.get());
   }
 
   void RpcHandler(int64_t req, const AgentRpcArgs& args,
@@ -278,6 +281,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
   }
 
  private:
+  std::unique_ptr<OrcaMessenger> orcaMessenger;
   std::unique_ptr<FifoScheduler> global_scheduler_;
 };
 
