@@ -6,8 +6,6 @@ from decimal import Decimal
 import subprocess
 from typing import List, Tuple
 
-ORCA_PORT = 8000
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--out_file", type=str, required=True, help="output file for experiment results"
@@ -18,7 +16,7 @@ def set_scheduler(sched_type: str, preemption_interval_us: int = 0) -> None:
     "Set the scheduler via orca_client."
 
     if sched_type != "cfs":
-        cmdargs = ["bazel-bin/orca_client", str(ORCA_PORT), "setsched", sched_type]
+        cmdargs = ["bazel-bin/orca_client", "setsched", sched_type]
         if preemption_interval_us > 0:
             cmdargs.append(str(preemption_interval_us))
         subprocess.run(cmdargs, check=True)
