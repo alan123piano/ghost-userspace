@@ -66,7 +66,7 @@ def run_sched_exp(sched_type: str, proportion_long_jobs: Decimal) -> List[List[s
     preemption_interval_us = 500 if sched_type == "cFCFS" else 0
     set_scheduler(sched_type=sched_type, preemption_interval_us=preemption_interval_us)
 
-    for throughput in range(30000, 300000 + 1, 30000):
+    for throughput in range(0, 500000 + 1, 25000):
         print(
             f"Starting experiment for sched_type={sched_type} "
             f"throughput={throughput} "
@@ -75,8 +75,8 @@ def run_sched_exp(sched_type: str, proportion_long_jobs: Decimal) -> List[List[s
         (stats, timed_out) = run_experiment(
             sched_type=sched_type,
             throughput=throughput,
-            runtime=5,
-            num_workers=10,
+            runtime=1,
+            num_workers=16,
             proportion_long_jobs=proportion_long_jobs,
         )
 
