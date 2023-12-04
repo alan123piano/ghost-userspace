@@ -427,7 +427,7 @@ void FifoAgent::AgentThread() {
           // m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
-          printf("-- DEAD-- \n");git
+          printf("-- DEAD-- \n");
           if (verbose()) m.printResult(stderr);
           // m.sendMessageToOrca();
         }
