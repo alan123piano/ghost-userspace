@@ -418,7 +418,7 @@ void FifoAgent::AgentThread() {
     scheduler_->Schedule(cpu(), status_word());
 
     if(profile_peroid.Edge() && cpu().id() == this->profiler_cpu){
-      // auto res = scheduler_->CollectMetric();
+      auto res = scheduler_->CollectMetric();
       if(debug_out.Edge())
       {
         absl::MutexLock lock(&(scheduler_->deadTasksMu_));
@@ -427,7 +427,7 @@ void FifoAgent::AgentThread() {
           // m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
-          printf("-- DEAD-- \n");
+          printf("-- DEAD-- \n");git
           if (verbose()) m.printResult(stderr);
           // m.sendMessageToOrca();
         }
