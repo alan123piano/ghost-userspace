@@ -192,7 +192,7 @@ class FifoAgent : public LocalAgent {
 
  private:
   FifoScheduler* scheduler_;
-  int32_t profiler_cpu;
+  // int32_t profiler_cpu;
 };
 
 template <class EnclaveType>
@@ -237,7 +237,7 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
 
  private:
   std::unique_ptr<FifoScheduler> scheduler_;
-  int32_t profiler_cpu;
+  // int32_t profiler_cpu;
 };
 
 }  // namespace ghost
