@@ -105,8 +105,8 @@ void FifoScheduler::TaskNew(FifoTask* task, const Message& msg) {
       static_cast<const ghost_msg_payload_task_new*>(msg.payload());
 
   task->seqnum = msg.seqnum();
-  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
-                      /* update_elapsed_runtime= */ false);
+  // task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+  //                     /* update_elapsed_runtime= */ false);
   task->run_state = FifoTaskState::kBlocked;
   task->updateState(FifoTask::RunStateToString(task->run_state));
 
@@ -196,8 +196,8 @@ void FifoScheduler::TaskBlocked(FifoTask* task, const Message& msg) {
   const ghost_msg_payload_task_blocked* payload =
       static_cast<const ghost_msg_payload_task_blocked*>(msg.payload());
 
-  task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
-                      /* update_elapsed_runtime= */ true);
+  // task->updateTaskRuntime(absl::Nanoseconds(payload->runtime),
+  //                     /* update_elapsed_runtime= */ true);
   TaskOffCpu(task, /*blocked=*/true, payload->from_switchto);
 
   if (payload->from_switchto) {
@@ -405,9 +405,9 @@ void FifoAgent::AgentThread() {
   if (verbose() > 1) {
     printf("Agent tid:=%d\n", gtid().tid());
   }
-  if(verbose() == 1){
-    printf("Agent cpu:=%d, profiler cpu %d\n", cpu().id(), profiler_cpu);
-  }
+  // if(verbose() == 1){
+    // printf("Agent cpu:=%d, profiler cpu %d\n", cpu().id(), profiler_cpu);
+  // }
   SignalReady();
   WaitForEnclaveReady();
 
@@ -417,7 +417,7 @@ void FifoAgent::AgentThread() {
   while (!Finished() || !scheduler_->Empty(cpu())) {
     scheduler_->Schedule(cpu(), status_word());
 
-    if(profile_peroid.Edge() && cpu().id() == this->profiler_cpu){
+    if(profile_peroid.Edge() /*&& cpu().id() == this->profiler_cpu*/ ){
       // auto res = scheduler_->CollectMetric();
       if(debug_out.Edge())
       {
