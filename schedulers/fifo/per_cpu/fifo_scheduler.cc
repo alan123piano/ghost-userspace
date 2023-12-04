@@ -405,6 +405,9 @@ void FifoAgent::AgentThread() {
   if (verbose() > 1) {
     printf("Agent tid:=%d\n", gtid().tid());
   }
+  if(verbose() == 1){
+    printf("Agent cpu:=%d, profiler cpu %d\n", cpu().id(), profiler_cpu);
+  }
   SignalReady();
   WaitForEnclaveReady();
 
@@ -415,20 +418,20 @@ void FifoAgent::AgentThread() {
     scheduler_->Schedule(cpu(), status_word());
 
     if(profile_peroid.Edge() && cpu().id() == this->profiler_cpu){
-      auto res = scheduler_->CollectMetric();
+      // auto res = scheduler_->CollectMetric();
       if(debug_out.Edge())
       {
-        absl::MutexLock lock(&(scheduler_->deadTasksMu_));
-        for(auto &m : res){
-          if (verbose()) m.printResult(stderr);
-          m.sendMessageToOrca();
-        }
-        for(auto &m : scheduler_->deadTasks){
-          printf("-- DEAD-- \n");
-          if (verbose()) m.printResult(stderr);
-          m.sendMessageToOrca();
-        }
-        scheduler_->deadTasks.clear();
+        // absl::MutexLock lock(&(scheduler_->deadTasksMu_));
+        // for(auto &m : res){
+        //   if (verbose()) m.printResult(stderr);
+        //   m.sendMessageToOrca();
+        // }
+        // for(auto &m : scheduler_->deadTasks){
+        //   printf("-- DEAD-- \n");
+        //   if (verbose()) m.printResult(stderr);
+        //   m.sendMessageToOrca();
+        // }
+        // scheduler_->deadTasks.clear();
       }
     }
     
