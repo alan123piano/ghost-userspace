@@ -203,11 +203,11 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
     scheduler_ =
         MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
         
-    if (!(*this->enclave_.cpus()).IsSet(profiler_cpu)) {
-      Cpu c = (*this->enclave_.cpus()).Front();
-      CHECK(c.valid());
-      profiler_cpu = c.id();
-    }
+    // if (!(*this->enclave_.cpus()).IsSet(profiler_cpu)) {
+    //   Cpu c = (*this->enclave_.cpus()).Front();
+    //   CHECK(c.valid());
+    //   profiler_cpu = c.id();
+    // }
     this->StartAgentTasks();
     this->enclave_.Ready();
   }
