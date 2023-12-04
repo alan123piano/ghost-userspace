@@ -1373,7 +1373,8 @@ cc_library(
         "orca/helpers.h",
         "orca/orca.h",
         "orca/protocol.h",
-        "orca/orca_messenger.h"
+        "orca/orca_messenger.h",
+        "schedulers/fifo/TaskWithMetric.h"
     ],
     copts = compiler_flags,
 )
