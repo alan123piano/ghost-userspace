@@ -14,7 +14,7 @@
 #include "lib/scheduler.h"
 #include "schedulers/fifo/TaskWithMetric.h"
 #include "schedulers/fifo/ProfilingAgentConfig.h"
-#include "orca/orca_messenger.h"
+#include "schedulers/fifo/orca_messenger.h"
 
 namespace ghost {
 
