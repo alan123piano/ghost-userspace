@@ -421,17 +421,17 @@ void FifoAgent::AgentThread() {
       // auto res = scheduler_->CollectMetric();
       if(debug_out.Edge())
       {
-        // absl::MutexLock lock(&(scheduler_->deadTasksMu_));
-        // for(auto &m : res){
-        //   if (verbose()) m.printResult(stderr);
-        //   m.sendMessageToOrca();
-        // }
-        // for(auto &m : scheduler_->deadTasks){
-        //   printf("-- DEAD-- \n");
-        //   if (verbose()) m.printResult(stderr);
-        //   m.sendMessageToOrca();
-        // }
-        // scheduler_->deadTasks.clear();
+        absl::MutexLock lock(&(scheduler_->deadTasksMu_));
+        for(auto &m : res){
+          if (verbose()) m.printResult(stderr);
+          // m.sendMessageToOrca();
+        }
+        for(auto &m : scheduler_->deadTasks){
+          printf("-- DEAD-- \n");
+          if (verbose()) m.printResult(stderr);
+          // m.sendMessageToOrca();
+        }
+        scheduler_->deadTasks.clear();
       }
     }
     
@@ -445,10 +445,10 @@ void FifoAgent::AgentThread() {
       }
     }
   }
-  // printf("Size of metrics %d\n", scheduler_->metrics.size());
-  // for(auto &m : scheduler_->metrics){
-  //   m.printResult(stdout);
-  // }
+  printf("Size of metrics %d\n", scheduler_->metrics.size());
+  for(auto &m : scheduler_->metrics){
+    m.printResult(stdout);
+  }
 }
 
 std::ostream& operator<<(std::ostream& os, const FifoTaskState& state) {
