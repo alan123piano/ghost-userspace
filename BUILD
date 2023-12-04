@@ -1365,11 +1365,15 @@ cc_binary(
 
 cc_library(
     name = "orca_lib",
+    srcs = [
+        "orca/orca_messenger.cpp"
+    ],
     hdrs = [
         "orca/event_signal.h",
         "orca/helpers.h",
         "orca/orca.h",
         "orca/protocol.h",
+        "orca/orca_messenger.h"
     ],
     copts = compiler_flags,
 )
@@ -1377,7 +1381,7 @@ cc_library(
 cc_binary(
     name = "orca",
     srcs = [
-        "orca/orca.cpp",
+        "orca/orca.cpp"
     ],
     copts = compiler_flags,
     deps = [

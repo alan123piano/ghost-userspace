@@ -115,20 +115,4 @@ namespace ghost
         double stdev = sqrt(accum / (v.size() - 1));
         return stdev;
     }
-
-    // void TaskWithMetric::Metric::sendMessageToOrca()
-    // {
-    //     orca::OrcaMetric msg;
-    //     msg.gtid = gtid.id();
-    //     msg.created_at_us = absl::ToUnixMicros(createdAt);
-    //     msg.block_time_us = absl::ToInt64Microseconds(blockTime);
-    //     msg.runnable_time_us = absl::ToInt64Microseconds(runnableTime);
-    //     msg.queued_time_us = absl::ToInt64Microseconds(queuedTime);
-    //     msg.on_cpu_time_us = absl::ToInt64Microseconds(onCpuTime);
-    //     msg.yielding_time_us = absl::ToInt64Microseconds(yieldingTime);
-    //     msg.died_at_us = absl::ToUnixMicros(diedAt);
-    //     msg.preempt_count = preemptCount;
-
-    //     messenger.sendBytes((const char *)&msg, sizeof(msg));
-    // }
 }

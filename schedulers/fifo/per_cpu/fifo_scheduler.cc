@@ -423,14 +423,14 @@ void FifoAgent::AgentThread() {
       {
         absl::MutexLock lock(&(scheduler_->deadTasksMu_));
         for(auto &m : res){
-        //   if (verbose()) m.printResult(stderr);
-          m.printResult(stderr);
+          if (verbose()) m.printResult(stderr);
+          this->orcaMessenger->sendMessageToOrca(m);
         //   m.sendMessageToOrca();
         }
         for(auto &m : scheduler_->deadTasks){
-          printf("-- DEAD-- \n");
-          // if (verbose()) 
-          m.printResult(stderr);
+          // printf("-- DEAD-- \n");
+          if (verbose()) m.printResult(stderr);
+          this->orcaMessenger->sendMessageToOrca(m);
           // m.sendMessageToOrca();
         }
         scheduler_->deadTasks.clear();
