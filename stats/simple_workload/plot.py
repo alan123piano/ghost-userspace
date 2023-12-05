@@ -79,7 +79,7 @@ def main() -> None:
             ax.plot(xs, ys, label=sched_type)
 
         ax.set_xlabel("Throughput (reqs/sec)")
-        ax.set_ylabel("99.9%% Latency")
+        ax.set_ylabel("99.9% Latency (μs)")
         ax.legend()
         ax.set_title(title)
 
