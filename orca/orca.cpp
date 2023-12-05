@@ -65,6 +65,8 @@ int main(int argc, char *argv[]) {
     static std::unique_ptr<orca::Orca> orca_agent;
     orca_agent = std::make_unique<orca::Orca>();
 
+    orca::MetricAnalyzer analyzer;
+
     // run dFCFS by default
     orca_agent->set_scheduler(orca::SchedulerConfig{
         .type = orca::SchedulerConfig::SchedulerType::dFCFS});
@@ -145,6 +147,22 @@ int main(int argc, char *argv[]) {
 
                     break;
                 }
+                case orca::MessageType::DetermineScheduler: {
+                    auto suggested_config = analyzer.suggest();
+                    std::cout << "Received DetermineScheduler." << std::endl;
+
+                    orca_agent->set_scheduler(analyzer.suggest());
+
+                    sched_ready.once([connfd, &sched_ready](int) {
+                        // send ack
+                        orca::OrcaHeader ack(orca::MessageType::Ack);
+                        send_full(connfd, (const char *)&ack, sizeof(ack));
+
+                        close(connfd);
+                    });
+
+                    break;
+                }
                 default:
                     panic("unimplemented tcp message type");
                 }
@@ -179,6 +197,22 @@ int main(int argc, char *argv[]) {
                               << std::endl;
 
                     // TODO: do stuff based on metric
+
+                    break;
+                }
+                case orca::MessageType::IngressHint: {
+                    auto *msg = (orca::OrcaIngressHint *)buf;
+
+                    switch (msg->hint) {
+                    case orca::OrcaIngressHint::ReqLength::Short: {
+                        analyzer.add_short();
+                        break;
+                    }
+                    case orca::OrcaIngressHint::ReqLength::Long: {
+                        analyzer.add_long();
+                        break;
+                    }
+                    }
 
                     break;
                 }

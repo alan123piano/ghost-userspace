@@ -51,6 +51,7 @@ void send_message(int port, const char *buf, size_t len) {
 void print_usage() {
     printf("Orca client usage:\n");
     printf("setsched <dfifo|cfifo> <preemption_interval_us=0>\n");
+    printf("detsched\n");
     printf("Press <C-d> to quit.\n");
     std::cout << std::flush;
 }
@@ -88,6 +89,9 @@ void handle_input(int port, const std::string &input) {
         orca::OrcaSetScheduler msg;
         msg.config = config;
 
+        send_message(port, (const char *)&msg, sizeof(msg));
+    } else if (cmd == "detsched") {
+        orca::OrcaDetermineScheduler msg;
         send_message(port, (const char *)&msg, sizeof(msg));
     } else {
         printf("Invalid command: %s\n", input.c_str());

@@ -1331,6 +1331,7 @@ cc_binary(
         ":base",
         ":ghost",
         ":shared",
+        ":orca_lib",
         "@com_google_absl//absl/flags:parse",
     ],
 )

@@ -14,9 +14,9 @@
 #include <utility>
 #include <vector>
 
-#include "absl/flags/parse.h"
 #include "lib/base.h"
 #include "lib/ghost.h"
+#include "orca/protocol.h"
 
 using std::chrono::steady_clock;
 
@@ -63,6 +63,9 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
     std::queue<Job *> work_q;
     std::mutex work_q_m;
 
+    // hack: send ingress hints to Orca
+    orca::OrcaUDPClient orca_client;
+
     // Spawn worker threads
     std::vector<std::unique_ptr<GhostThread>> worker_threads;
     worker_threads.reserve(num_workers);
@@ -84,6 +87,21 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
                     }
                 }
 
+                // Send hint to Orca
+                orca::OrcaIngressHint hint;
+                switch (job->type) {
+                case JobType::Short: {
+                    hint.hint = orca::OrcaIngressHint::ReqLength::Short;
+                    break;
+                }
+                case JobType::Long: {
+                    hint.hint = orca::OrcaIngressHint::ReqLength::Long;
+                    break;
+                }
+                }
+                orca_client.send_bytes((const char *)&hint, sizeof(hint));
+
+                // Run job
                 auto start = steady_clock::now();
                 if (job->type == JobType::Short) {
                     while (std::chrono::duration<double>(steady_clock::now() -
@@ -96,6 +114,8 @@ std::vector<Job> run_experiment(GhostThread::KernelScheduler ks_mode,
                                .count() < 1e-3) {
                     }
                 }
+
+                // Mark finished timestamp
                 job->finished = steady_clock::now();
             }
         });

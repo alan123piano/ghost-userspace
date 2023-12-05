@@ -24,6 +24,35 @@ struct SchedulerConfig {
     int preemption_interval_us = -1; // ignored for dFCFS
 };
 
+// Helper which suggests a scheduling config based on input data.
+// TODO: this class could form the basis of a more generalized analysis.
+class MetricAnalyzer {
+public:
+    // Indicate that we saw a short request.
+    void add_short() { ++num_short; }
+
+    // Indicate that we saw a long request.
+    void add_long() { ++num_long; }
+
+    // Suggest a good scheduler config based on our stats.
+    SchedulerConfig suggest() {
+        double proportion_long =
+            (double)num_long / ((double)num_short + (double)num_long);
+        if (proportion_long < 0.1) {
+            return SchedulerConfig{.type =
+                                       SchedulerConfig::SchedulerType::dFCFS};
+        } else {
+            return SchedulerConfig{.type =
+                                       SchedulerConfig::SchedulerType::cFCFS,
+                                   .preemption_interval_us = 500};
+        }
+    }
+
+private:
+    int num_short = 0;
+    int num_long = 0;
+};
+
 class Orca {
 public:
     Orca() {
