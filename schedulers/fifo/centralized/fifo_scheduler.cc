@@ -173,6 +173,7 @@ void FifoScheduler::TaskPreempted(FifoTask* task, const Message& msg) {
     CHECK_EQ(cs->current, task);
     cs->current = nullptr;
     task->run_state = FifoTask::RunState::kRunnable;
+    ++task->m.preemptCount;
     task->updateState(FifoTask::RunStateToString(task->run_state));
     Enqueue(task);
   } else {
