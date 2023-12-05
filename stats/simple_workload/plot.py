@@ -2,6 +2,7 @@ import csv
 from dataclasses import dataclass
 from decimal import Decimal
 import os
+import sys
 from typing import Any
 import matplotlib.pyplot as plt
 
@@ -45,7 +46,7 @@ def read_csv(filename: str) -> list[ExpResult]:
 
 def main() -> None:
     results: list[ExpResult] = []
-    resultsdir = "run5"
+    resultsdir = sys.argv[1]
     for fname in os.listdir(resultsdir):
         fpath = os.path.join(resultsdir, fname)
         if os.path.isfile(fpath) and fpath.endswith(".txt"):
