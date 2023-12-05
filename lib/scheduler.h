@@ -178,7 +178,7 @@ class TaskAllocator {
 
   virtual void FreeTask(TaskType* task) = 0;
 
-  typedef std::function<bool(Gtid gtid, const TaskType* task)> TaskCallbackFunc;
+  typedef std::function<bool(Gtid gtid, TaskType* task)> TaskCallbackFunc;
   virtual void ForEachTask(TaskCallbackFunc func) = 0;
 };
 
