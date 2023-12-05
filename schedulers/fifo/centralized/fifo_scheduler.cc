@@ -515,6 +515,7 @@ void FifoAgent::AgentThread() {
             this->orcaMessenger->sendMessageToOrca(m);
           }
           global_scheduler_->deadTasks.clear();
+          global_scheduler_->ClearMetric();
         }
       }
     

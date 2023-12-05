@@ -63,6 +63,7 @@ namespace ghost
 
             void printResult(FILE *to);
             static double stddev(const std::vector<Metric> &v);
+            void clear();
 
         private:
         };

@@ -77,6 +77,16 @@ namespace ghost
         absl::FPrintF(to, "---------------------------------\n");
     }
 
+    void TaskWithMetric::Metric::clear()
+    {
+        blockTime = absl::ZeroDuration(); 
+        runnableTime = absl::ZeroDuration(); 
+        queuedTime = absl::ZeroDuration();   
+        onCpuTime = absl::ZeroDuration();   
+        yieldingTime = absl::ZeroDuration();
+        preemptCount = 0;
+    }
+
     TaskWithMetric::TaskState TaskWithMetric::getStateFromString(std::string_view state)
     {
         if (state == "Blocked")

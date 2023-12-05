@@ -133,6 +133,14 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
     return tmp; 
   }
 
+  void ClearMetric(){
+    // Threadsafe by allocator's guarantee
+    allocator()->ForEachTask([](Gtid gtid, const FifoTask* task) {
+      task->m.clear();
+      return true;
+    });
+  }
+
   std::vector<TaskWithMetric::Metric> deadTasks; 
 
  private:

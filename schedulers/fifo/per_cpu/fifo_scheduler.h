@@ -139,6 +139,14 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
     return tmp; 
   }
 
+  void ClearMetric(){
+    // Threadsafe by allocator's guarantee
+    allocator()->ForEachTask([](Gtid gtid, const FifoTask* task) {
+      task->m.clear();
+      return true;
+    });
+  }
+
   static constexpr int kDebugRunqueue = 1;
   static constexpr int kCountAllTasks = 2;
   absl::Mutex deadTasksMu_;

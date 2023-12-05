@@ -434,6 +434,7 @@ void FifoAgent::AgentThread() {
           // m.sendMessageToOrca();
         }
         scheduler_->deadTasks.clear();
+        scheduler_->ClearMetric();
       }
     }
     
