@@ -337,7 +337,6 @@ GhostThread::GhostThread(KernelScheduler ksched, std::function<void()> work,
       const int ret = GhostHelper()->SchedTaskEnterGhost(/*pid=*/0, dir_fd);
       CHECK_EQ(ret, 0);
     }
-
     std::move(w)();
   });
   started_.WaitForNotification();
