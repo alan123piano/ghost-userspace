@@ -62,14 +62,14 @@
 struct __flux_sched {
 	int64_t nr_cpus;
 	int64_t nr_cpus_wanted;
-	unsigned int id;	/* like a pointer to the struct itself */
-	unsigned int type;	/* like a pointer to a struct ops */
+	int id;		/* like a pointer to the struct itself */
+	int type;	/* like a pointer to a struct ops */
 };
 
 struct __flux_cpu {
 	uint64_t preempt_to;	/* need 64 bits for CAS */
-	unsigned int id;
-	unsigned int current_sched;
+	int id;
+	int current_sched;
 	bool available;
 	bool pnt_success;
 	uint64_t latched_seqnum;	/* for use in PNT */
@@ -79,7 +79,7 @@ struct __flux_thread {
 	uint64_t gtid;
 	uint64_t seqnum;
 	uint64_t refcnt;	/* need 64 bits for fetch-add */
-	unsigned int sched;
+	int sched;
 	int nice;
 	bool on_rq;		/* runnable and/or running. */
 	bool on_cpu;		/* running */
