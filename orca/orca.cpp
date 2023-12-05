@@ -160,7 +160,7 @@ int main(int argc, char *argv[]) {
                     }
                     std::cout << std::endl;
 
-                    orca_agent->set_scheduler(analyzer.suggest());
+                    orca_agent->set_scheduler(suggested_config);
 
                     sched_ready.once([connfd, type = suggested_config.type,
                                       &sched_ready](int) {
