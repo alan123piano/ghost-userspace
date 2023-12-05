@@ -37,7 +37,7 @@ def read_csv(filename: str) -> list[ExpResult]:
                     proportion_long_jobs=Decimal(
                         row[idx_of_keys["proportion_long_jobs"]]
                     ),
-                    latency=float(row[idx_of_keys["short_99_pct"]]),
+                    latency=float(row[idx_of_keys["short_99.9_pct"]]),
                 )
             )
 
@@ -79,7 +79,7 @@ def main() -> None:
             ax.plot(xs, ys, label=sched_type)
 
         ax.set_xlabel("Throughput (reqs/sec)")
-        ax.set_ylabel("Latency")
+        ax.set_ylabel("99.9%% Latency")
         ax.legend()
         ax.set_title(title)
 
