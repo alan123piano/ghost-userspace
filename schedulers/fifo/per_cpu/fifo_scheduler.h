@@ -141,7 +141,7 @@ class FifoScheduler : public BasicDispatchScheduler<FifoTask> {
 
   void ClearMetric(){
     // Threadsafe by allocator's guarantee
-    allocator()->ForEachTask([](Gtid gtid, const FifoTask* task) {
+    allocator()->ForEachTask([](Gtid gtid, FifoTask* task) {
       task->m.clear();
       return true;
     });
