@@ -149,7 +149,16 @@ int main(int argc, char *argv[]) {
                 }
                 case orca::MessageType::DetermineScheduler: {
                     auto suggested_config = analyzer.suggest();
-                    std::cout << "Received DetermineScheduler." << std::endl;
+
+                    std::cout << "Received DetermineScheduler. ";
+                    if (suggested_config.type ==
+                        orca::SchedulerConfig::SchedulerType::dFCFS) {
+                        std::cout << "Selected dFCFS.";
+                    } else if (suggested_config.type ==
+                               orca::SchedulerConfig::SchedulerType::cFCFS) {
+                        std::cout << "Selected cFCFS.";
+                    }
+                    std::cout << std::endl;
 
                     orca_agent->set_scheduler(analyzer.suggest());
 

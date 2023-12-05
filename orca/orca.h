@@ -36,9 +36,23 @@ public:
 
     // Suggest a good scheduler config based on our stats.
     SchedulerConfig suggest() {
-        double proportion_long =
-            (double)num_long / ((double)num_short + (double)num_long);
-        if (proportion_long < 0.1) {
+        if (num_short + num_long == 0) {
+            // avoid div by zero
+            // reply with dummy config
+            return SchedulerConfig{.type =
+                                       SchedulerConfig::SchedulerType::dFCFS};
+        }
+
+        double shorts = (double)num_short;
+        double longs = (double)num_long;
+
+        double p = longs / (shorts + longs);
+
+        // reset metrics
+        num_short = 0;
+        num_long = 0;
+
+        if (p < 0.1) {
             return SchedulerConfig{.type =
                                        SchedulerConfig::SchedulerType::dFCFS};
         } else {
