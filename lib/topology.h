@@ -15,7 +15,6 @@
 #include <sched.h>
 
 #include <atomic>
-#include <cstdint>
 #include <filesystem>
 #include <vector>
 
@@ -24,7 +23,9 @@
 #include "lib/base.h"
 
 // We carry some definitions currently which anchor on this for convenience.
+// LINT.IfChange
 #define MAX_CPUS 512
+// LINT.ThenChange(//depot/google3/third_party/ghost/bpf/bpf/schedghostidle.bpf.c)
 
 namespace ghost {
 
@@ -127,11 +128,6 @@ class Cpu {
 //  ..
 class CpuMap {
  public:
-  // The number of bits in the `uint64_t` type.
-  static constexpr size_t kIntsBits = CHAR_BIT * sizeof(uint64_t);
-  // The number of "slots" allocated to the bitmap.
-  static constexpr size_t kMapCapacity = MAX_CPUS / kIntsBits;
-
   explicit CpuMap(const Topology& topology);
 
   virtual ~CpuMap() = default;
@@ -229,9 +225,13 @@ class CpuMap {
   // Returns number of set bits in the bitmap.
   uint32_t Size() const { return CountSetCpus(); }
 
-  size_t map_size() const { return map_size_; }
-
  protected:
+  // The number of bits in the `uint64_t` type.
+  static constexpr size_t kIntsBits = CHAR_BIT * sizeof(uint64_t);
+
+  // The number of "slots" allocated to the bitmap.
+  static constexpr size_t kMapCapacity = MAX_CPUS / kIntsBits;
+
   // Returns number of set cpus in the map.
   uint32_t CountSetCpus() const {
     uint32_t ret = 0;
@@ -263,9 +263,8 @@ class CpuList : public CpuMap {
   // Returns true if `this` and `other` have identical bitmaps, false
   // otherwise.
   bool operator==(const CpuList& other) const {
-    const uint64_t* bitmap = GetMapConst();
-    const uint64_t* compare = other.GetMapConst();
-    return !memcmp(bitmap, compare, sizeof(*bitmap) * map_size_);
+    return std::equal(std::begin(bitmap_), std::end(bitmap_),
+                      std::begin(other.bitmap_));
   }
 
   // Returns the Union of `this` and `other`.
@@ -299,13 +298,7 @@ class CpuList : public CpuMap {
     cpus.reserve(size);
 
     for (uint32_t i = 0; i < size; i++) {
-      Cpu cpu = GetNthCpu(i);
-      // If the list is modified concurrently, there might be fewer than `size`
-      // cpus left in the mask.
-      if (!cpu.valid()) {
-        break;
-      }
-      cpus.push_back(cpu);
+      cpus.push_back(GetNthCpu(i));
     }
     return cpus;
   }
@@ -317,13 +310,7 @@ class CpuList : public CpuMap {
     cpus.reserve(size);
 
     for (uint32_t i = 0; i < size; i++) {
-      // If the list is modified concurrently, there might be fewer than `size`
-      // cpus left in the mask.
-      Cpu cpu = GetNthCpu(i);
-      if (!cpu.valid()) {
-        break;
-      }
-      cpus.push_back(cpu.id());
+      cpus.push_back(GetNthCpu(i).id());
     }
     return cpus;
   }
@@ -338,8 +325,7 @@ class CpuList : public CpuMap {
   // ...
   // a.Intersection(b);  // Mutates `a`.
   void Intersection(const CpuList& src) {
-    uint64_t* bitmap = GetMap();
-    std::transform(bitmap, bitmap + map_size_, src.GetMapConst(), bitmap,
+    std::transform(bitmap_, bitmap_ + map_size_, src.bitmap_, bitmap_,
                    [](uint64_t a, uint64_t b) { return a & b; });
   }
 
@@ -352,8 +338,7 @@ class CpuList : public CpuMap {
   // ...
   // a.Union(b);  // Mutates `a`.
   void Union(const CpuList& src) {
-    uint64_t* bitmap = GetMap();
-    std::transform(bitmap, bitmap + map_size_, src.GetMapConst(), bitmap,
+    std::transform(bitmap_, bitmap_ + map_size_, src.bitmap_, bitmap_,
                    [](uint64_t a, uint64_t b) { return a | b; });
   }
 
@@ -367,8 +352,7 @@ class CpuList : public CpuMap {
   // ...
   // a.Subtract(b);  // Mutates `a`.
   void Subtract(const CpuList& src) {
-    uint64_t* bitmap = GetMap();
-    std::transform(bitmap, bitmap + map_size_, src.GetMapConst(), bitmap,
+    std::transform(bitmap_, bitmap_ + map_size_, src.bitmap_, bitmap_,
                    [](uint64_t a, uint64_t b) { return a & ~b; });
   }
 
@@ -377,7 +361,7 @@ class CpuList : public CpuMap {
     DCHECK_GE(id, 0);
     DCHECK_LT(id, MAX_CPUS);
 
-    GetMap()[id / kIntsBits] |= (1ULL << (id % kIntsBits));
+    bitmap_[id / kIntsBits] |= (1ULL << (id % kIntsBits));
   }
   using CpuMap::Set;
 
@@ -386,7 +370,7 @@ class CpuList : public CpuMap {
     DCHECK_GE(id, 0);
     DCHECK_LT(id, MAX_CPUS);
 
-    GetMap()[id / kIntsBits] &= ~(1ULL << (id % kIntsBits));
+    bitmap_[id / kIntsBits] &= ~(1ULL << (id % kIntsBits));
   }
   using CpuMap::Clear;
 
@@ -395,7 +379,7 @@ class CpuList : public CpuMap {
     DCHECK_GE(id, 0);
     DCHECK_LT(id, MAX_CPUS);
 
-    return GetMapConst()[id / kIntsBits] & (1ULL << (id % kIntsBits));
+    return bitmap_[id / kIntsBits] & (1ULL << (id % kIntsBits));
   }
   using CpuMap::IsSet;
 
@@ -425,9 +409,8 @@ class CpuList : public CpuMap {
   std::string CpuMaskStr() const {
     std::string s;
     bool emitted_nibble = false;
-    const uint8_t* bitmap_bytes =
-        reinterpret_cast<const uint8_t*>(GetMapConst());
-    size_t len = map_size_ * sizeof(*GetMapConst());
+    const uint8_t* bitmap_bytes = reinterpret_cast<const uint8_t*>(bitmap_);
+    size_t len = map_size_ * sizeof(bitmap_[0]);
     // The bitmap is stored with the lowest bits at the beginning of the map.
     // Print the MSB first, both backwards and the upper nibble first.
     for (int i = len - 1; i >= 0; --i) {
@@ -469,42 +452,13 @@ class CpuList : public CpuMap {
   }
 
  private:
-  virtual uint64_t* GetMap() {
-    return bitmap_internal_;
-  }
-
-  virtual const uint64_t* GetMapConst() const {
-    return bitmap_internal_;
-  }
-
   uint64_t GetNthMap(int n) const override {
     DCHECK_GE(n, 0);
     DCHECK_LT(n, kMapCapacity);
-    return GetMapConst()[n];
+    return bitmap_[n];
   }
 
-  // Only the above helpers should use this directly, since derived classes
-  // may override them.
-  uint64_t bitmap_internal_[kMapCapacity] = {0};
-};
-
-// A CpuList derived class that wraps a pointer to a remote bitmap, rather than
-// use class-local storage.
-class WrappedCpuList : public CpuList {
- public:
-  explicit WrappedCpuList(const Topology& topology, uint64_t* map, size_t slots)
-      : CpuList(topology), bitmap_ptr_(map) {
-    CHECK_EQ(slots, kMapCapacity);
-  }
-
- private:
-  uint64_t* GetMap() override { return bitmap_ptr_; }
-
-  const uint64_t* GetMapConst() const override {
-    return bitmap_ptr_;
-  }
-
-  uint64_t* const bitmap_ptr_ = nullptr;
+  uint64_t bitmap_[kMapCapacity] = {0};
 };
 
 // An atomic implementation of a CpuMap. Useful for cases where it would be
@@ -586,8 +540,7 @@ class Topology {
   // These two functions use the private `Topology` constructor.
   friend Topology* MachineTopology();
   friend void UpdateTestTopology(const std::filesystem::path& test_directory,
-                                 bool has_l3_cache,
-                                 bool use_consecutive_smt_numbering);
+                                 bool has_l3_cache);
   friend void UpdateCustomTopology(const std::vector<Cpu::Raw>& cpus);
   friend Topology* CustomTopology();
 
@@ -660,9 +613,6 @@ class Topology {
   // Returns the number of numa nodes in this topology.
   uint32_t num_numa_nodes() const { return highest_node_idx_ + 1; }
 
-  // Returns true if the system uses consecutive SMT numbering.
-  bool consecutive_smt_numbering() const { return consecutive_smt_numbering_; }
-
   // Returns the CPU with ID 'cpu'.
   Cpu cpu(int cpu) const {
     DCHECK_GE(cpu, 0);
@@ -727,7 +677,7 @@ class Topology {
   // If `has_l3_cache` is true, creates an L3 cache. Otherwise, does not create
   // an L3 cache.
   Topology(InitTest, const std::filesystem::path& test_directory,
-           bool has_l3_cache, bool use_consecutive_smt_numbering);
+           bool has_l3_cache);
 
   Topology(InitCustom, std::vector<Cpu::Raw> cpus);
 
@@ -777,12 +727,8 @@ class Topology {
   //
   // If `has_l3_cache` is true, creates an L3 cache. Otherwise, does not create
   // an L3 cache.
-  //
-  // If `use_consecutive_smt_numbering` is true, this will use an SMT offset of
-  // 1.
   std::filesystem::path SetUpTestSiblings(
-      const std::filesystem::path& test_directory, bool has_l3_cache,
-      bool use_consecutive_smt_numbering) const;
+      const std::filesystem::path& test_directory, bool has_l3_cache) const;
 
   // Initializes test directory with a node possible file.
   std::filesystem::path SetupTestNodePossible(
@@ -805,8 +751,6 @@ class Topology {
 
   int highest_node_idx_ = -1;
 
-  bool consecutive_smt_numbering_ = false;
-
   std::vector<CpuList> cpus_on_node_;
 };
 
@@ -818,13 +762,10 @@ Topology* MachineTopology();
 // Creates a topology used by the topology tests and replaces the current test
 // topology if one exists. This topology has 112 CPUs, 2 hardware threads per
 // physical core (so there are 56 physical cores in total), and 2 NUMA nodes.
-// If `use_consecutive_smt_numbering` is false, CPU 0 is co-located with CPU 56
-// on the same physical core, CPU 1 is co-located with CPU 57, ..., and CPU 55
-// is co-located with CPU 111. Otherwise, CPU 0 is co-located with CPU 1, CPU 2
-// with CPU 3, etc. Lastly, CPUs 0-27 and 56-83 are on NUMA node 0 and CPUs
-// 28-55 and 84-111 are on NUMA node 1 when we have
-// !use_consecutive_smt_numbering. Otherwise, NUMA 0 has CPUs 0-55 and NUMA 1
-// has CPUs 56-111.
+// CPU 0 is co-located with CPU 56 on the same physical core, CPU 1 is
+// co-located with CPU 57, ..., and CPU 55 is co-located with CPU 111. This is
+// how Linux configures CPUs. Lastly, CPUs 0-27 and 56-83 are on NUMA node 0 and
+// CPUs 28-55 and 84-111 are on NUMA node 1.
 //
 // If `has_l3_cache` is true, an L3 cache is created. All CPUs in a NUMA node
 // share the same L3 cache. If `has_l3_cache` is false, then the topology is
@@ -832,11 +773,8 @@ Topology* MachineTopology();
 //
 // `test_directory` is a path to scratch space in the file system that the
 // topology can use.
-//
-// If `use_consecutive_smt_numbering` is true, the SMT offset will be set to 1.
 void UpdateTestTopology(const std::filesystem::path& test_directory,
-                        bool has_l3_cache,
-                        bool use_consecutive_smt_numbering = false);
+                        bool has_l3_cache);
 
 // Returns the test topology described above. The pointer is never null and is
 // owned by the `TestTopology` function. The pointer lives until the process
