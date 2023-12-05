@@ -72,7 +72,7 @@ def main() -> None:
         vals: list[tuple[str, int, float]] = [
             (k[0], k[1], min(v)) for k, v in m.items()
         ]
-        for sched_type in ["dFCFS", "cFCFS", "cfs"]:
+        for sched_type in ["dFCFS", "cFCFS", "cfs", "orca"]:
             svals = [(v[1], v[2]) for v in vals if v[0] == sched_type]
             xs = [v[0] for v in svals]
             ys = [v[1] for v in svals]

@@ -32,6 +32,13 @@ struct OrcaHeader {
     OrcaHeader(MessageType type) : type(type) {}
 };
 
+struct OrcaAck : OrcaHeader {
+    // include optional data with ack (debug)
+    char data[100];
+
+    OrcaAck() : OrcaHeader(MessageType::Ack) { memset(data, 0, sizeof(data)); }
+};
+
 // Message which results in the scheduler being restarted.
 struct OrcaSetScheduler : OrcaHeader {
     SchedulerConfig config;

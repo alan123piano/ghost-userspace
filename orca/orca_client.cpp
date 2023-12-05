@@ -38,12 +38,12 @@ void send_message(int port, const char *buf, size_t len) {
 
     // wait for ack
     printf("awaiting ack...\n");
-    orca::OrcaHeader header;
-    recv_full(sockfd, (char *)&header, sizeof(header));
-    if (header.type != orca::MessageType::Ack) {
+    orca::OrcaAck ack;
+    recv_full(sockfd, (char *)&ack, sizeof(ack));
+    if (ack.type != orca::MessageType::Ack) {
         panic("expected ack");
     }
-    printf("got ack\n");
+    printf("got ack. %s\n", ack.data);
 
     close(sockfd);
 }

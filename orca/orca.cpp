@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 
                     sched_ready.once([connfd, &sched_ready](int) {
                         // send ack
-                        orca::OrcaHeader ack(orca::MessageType::Ack);
+                        orca::OrcaAck ack;
                         send_full(connfd, (const char *)&ack, sizeof(ack));
 
                         close(connfd);
@@ -162,9 +162,17 @@ int main(int argc, char *argv[]) {
 
                     orca_agent->set_scheduler(analyzer.suggest());
 
-                    sched_ready.once([connfd, &sched_ready](int) {
+                    sched_ready.once([connfd, type = suggested_config.type,
+                                      &sched_ready](int) {
                         // send ack
-                        orca::OrcaHeader ack(orca::MessageType::Ack);
+                        orca::OrcaAck ack;
+                        if (type ==
+                            orca::SchedulerConfig::SchedulerType::dFCFS) {
+                            strcpy(ack.data, "dFCFS");
+                        } else if (type == orca::SchedulerConfig::
+                                               SchedulerType::cFCFS) {
+                            strcpy(ack.data, "cFCFS");
+                        }
                         send_full(connfd, (const char *)&ack, sizeof(ack));
 
                         close(connfd);
