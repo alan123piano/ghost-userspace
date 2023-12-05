@@ -45,7 +45,7 @@ def read_csv(filename: str) -> list[ExpResult]:
 
 def main() -> None:
     results: list[ExpResult] = []
-    resultsdir = "run4"
+    resultsdir = "run5"
     for fname in os.listdir(resultsdir):
         fpath = os.path.join(resultsdir, fname)
         if os.path.isfile(fpath) and fpath.endswith(".txt"):
