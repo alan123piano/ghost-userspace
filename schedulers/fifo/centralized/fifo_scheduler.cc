@@ -476,7 +476,7 @@ void FifoAgent::AgentThread() {
   WaitForEnclaveReady();
 
   PeriodicEdge debug_out(absl::Seconds(1));
-  PeriodicEdge profile_peroid(absl::Milliseconds(1));
+  PeriodicEdge profile_peroid(absl::Milliseconds(500));
 
   while (!Finished() || !global_scheduler_->Empty()) {
     BarrierToken agent_barrier = status_word().barrier();

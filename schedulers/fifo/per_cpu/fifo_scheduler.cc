@@ -412,7 +412,7 @@ void FifoAgent::AgentThread() {
   WaitForEnclaveReady();
 
   PeriodicEdge debug_out(absl::Seconds(1));
-  PeriodicEdge profile_peroid(absl::Milliseconds(1));
+  PeriodicEdge profile_peroid(absl::Milliseconds(500));
 
   while (!Finished() || !scheduler_->Empty(cpu())) {
     scheduler_->Schedule(cpu(), status_word());
