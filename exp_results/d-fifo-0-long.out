@@ -1,0 +1,10 @@
+/usr/bin/sudo bazel-bin/fifo_per_cpu_agent --ghost_cpus 0-7 
+Orca listening on port 8000...
+Initializing...
+Initialization complete, ghOSt active.
+Received Metric. gtid=51274625249729308, created_at_us=1702070061323226, block_time_us=566, runnable_time_us=996953, queued_time_us=265, on_cpu_time_us=212, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=51272426226473755, created_at_us=1702070061322817, block_time_us=421, runnable_time_us=1004306, queued_time_us=171, on_cpu_time_us=306, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=51274625249729308, created_at_us=1702070061323226, block_time_us=755, runnable_time_us=1008645, queued_time_us=114, on_cpu_time_us=222, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=51272426226473755, created_at_us=1702070061322817, block_time_us=831, runnable_time_us=1017642, queued_time_us=110, on_cpu_time_us=316, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=51272426226473755, created_at_us=1702070061322817, block_time_us=3, runnable_time_us=95605, queued_time_us=12, on_cpu_time_us=26, yielding_time_us=0, died_at_us=1702070063442573, preempt_count=0
+Received Metric. gtid=51274625249729308, created_at_us=1702070061323226, block_time_us=3, runnable_time_us=111595, queued_time_us=2, on_cpu_time_us=8, yielding_time_us=0, died_at_us=1702070063442576, preempt_count=0

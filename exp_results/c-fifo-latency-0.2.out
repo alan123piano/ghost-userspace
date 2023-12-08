@@ -1,0 +1,25 @@
+Spawning worker threads...
+Finished running worker threads.
+Finished running. 24025 short tasks, 5975 long tasks ran.
+== Short task stats ==
+0 percentile: 7.815
+25 percentile: 23844.839
+50 percentile: 31539.462
+75 percentile: 43555.467
+90 percentile: 64509.735
+99 percentile: 72029.223
+99.9 percentile: 73491.454
+100 percentile: 74066.358
+== Long task stats ==
+0 percentile: 1008.047
+25 percentile: 24525.234
+50 percentile: 32336.930
+75 percentile: 45492.270
+90 percentile: 65061.353
+99 percentile: 72770.817
+99.9 percentile: 74149.639
+100 percentile: 74846.348
+<csv>
+num_short, num_long, short_0_pct, short_25_pct, short_50_pct, short_75_pct, short_90_pct, short_99_pct, short_99.9_pct, short_100_pct, long_0_pct, long_25_pct, long_50_pct, long_75_pct, long_90_pct, long_99_pct, long_99.9_pct, long_100_pct
+24025, 5975, 7.815000, 23844.839000, 31539.462000, 43555.467000, 64509.735200, 72029.223480, 73491.453536, 74066.358000, 1008.047000, 24525.233500, 32336.930000, 45492.270000, 65061.352800, 72770.816760, 74149.639108, 74846.348000
+</csv>
