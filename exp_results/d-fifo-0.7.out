@@ -1,0 +1,25 @@
+/usr/bin/sudo bazel-bin/fifo_per_cpu_agent --ghost_cpus 0-7 
+Orca listening on port 8000...
+Initializing...
+Initialization complete, ghOSt active.
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=548021, queued_time_us=31, on_cpu_time_us=16, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=525884, queued_time_us=240, on_cpu_time_us=5, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=1, runnable_time_us=500278, queued_time_us=1921, on_cpu_time_us=8, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=520822, queued_time_us=1, on_cpu_time_us=16, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=396352, queued_time_us=0, on_cpu_time_us=2, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=231163, queued_time_us=2, on_cpu_time_us=7, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=1, runnable_time_us=684260, queued_time_us=20, on_cpu_time_us=21, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=387009, queued_time_us=8, on_cpu_time_us=2, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=936716, queued_time_us=16, on_cpu_time_us=5, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=513115, queued_time_us=14, on_cpu_time_us=16, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=668654, queued_time_us=12, on_cpu_time_us=1, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=285100, queued_time_us=10, on_cpu_time_us=5, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=1023952, queued_time_us=32, on_cpu_time_us=21, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=1, runnable_time_us=844499, queued_time_us=3, on_cpu_time_us=12, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=816897, queued_time_us=39, on_cpu_time_us=9, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=647806, queued_time_us=33, on_cpu_time_us=29, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=1106280, queued_time_us=0, on_cpu_time_us=5, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=1098054, queued_time_us=14, on_cpu_time_us=7, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2929098976396603, created_at_us=1702076234965740, block_time_us=0, runnable_time_us=548079, queued_time_us=15, on_cpu_time_us=13, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2933497022907709, created_at_us=1702076234965935, block_time_us=0, runnable_time_us=347417, queued_time_us=12, on_cpu_time_us=4, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=2931297999652156, created_at_us=1702076234965860, block_time_us=0, runnable_time_us=447967, queued_time_us=7, on_cpu_time_us=1, yielding_time_us=0, died_at_us=0, preempt_count=0
