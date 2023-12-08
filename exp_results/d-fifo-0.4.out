@@ -2,3 +2,9 @@
 Orca listening on port 8000...
 Initializing...
 Initialization complete, ghOSt active.
+Received Metric. gtid=3159996418229668, created_at_us=1702076627771022, block_time_us=0, runnable_time_us=1438777, queued_time_us=22, on_cpu_time_us=13, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=3164394464740774, created_at_us=1702076627771143, block_time_us=3, runnable_time_us=1407043, queued_time_us=28, on_cpu_time_us=15, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=3162195441485221, created_at_us=1702076627771063, block_time_us=2, runnable_time_us=1168806, queued_time_us=1808, on_cpu_time_us=16, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=3159996418229668, created_at_us=1702076627771022, block_time_us=0, runnable_time_us=1046321, queued_time_us=19, on_cpu_time_us=20, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=3164394464740774, created_at_us=1702076627771143, block_time_us=1, runnable_time_us=1067403, queued_time_us=15, on_cpu_time_us=11, yielding_time_us=0, died_at_us=0, preempt_count=0
+Received Metric. gtid=3162195441485221, created_at_us=1702076627771063, block_time_us=0, runnable_time_us=1218361, queued_time_us=38, on_cpu_time_us=11, yielding_time_us=0, died_at_us=0, preempt_count=0
