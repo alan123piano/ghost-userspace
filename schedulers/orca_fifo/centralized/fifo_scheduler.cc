@@ -4,13 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "schedulers/fifo/centralized/fifo_scheduler.h"
+#include "schedulers/orca_fifo/centralized/fifo_scheduler.h"
 
 #include <memory>
 
 #include "absl/strings/str_format.h"
 
 namespace ghost {
+namespace centralized{
 
 void FifoScheduler::CpuNotIdle(const Message& msg) { CHECK(0); }
 
@@ -504,6 +505,8 @@ void FifoAgent::AgentThread() {
 
       if(profile_peroid.Edge()){
         auto res = global_scheduler_->CollectMetric();
+        if(debug_out.Edge())
+        {
           for(auto &m : res){
             if (verbose()) m.printResult(stderr);
             this->orcaMessenger->sendMessageToOrca(m);
@@ -514,6 +517,7 @@ void FifoAgent::AgentThread() {
           }
           global_scheduler_->deadTasks.clear();
           global_scheduler_->ClearMetric();
+        }
       }
     
       if (verbose() && debug_out.Edge()) {
@@ -529,5 +533,5 @@ void FifoAgent::AgentThread() {
     }
   }
 }
-
+} // namespace centralized
 }  //  namespace ghost

@@ -4,11 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "schedulers/fifo/per_cpu/fifo_scheduler.h"
+#include "schedulers/orca_fifo/per_cpu/fifo_scheduler.h"
 
 #include <memory>
 
 namespace ghost {
+namespace per_cpu{
 
 FifoScheduler::FifoScheduler(Enclave* enclave, CpuList cpulist,
                              std::shared_ptr<TaskAllocator<FifoTask>> allocator)
@@ -419,6 +420,8 @@ void FifoAgent::AgentThread() {
 
     if(profile_peroid.Edge() && cpu().id() == this->profiler_cpu){
       auto res = scheduler_->CollectMetric();
+      if(debug_out.Edge())
+      {
         absl::MutexLock lock(&(scheduler_->deadTasksMu_));
         for(auto &m : res){
           if (verbose()) m.printResult(stderr);
@@ -433,6 +436,7 @@ void FifoAgent::AgentThread() {
         }
         scheduler_->deadTasks.clear();
         scheduler_->ClearMetric();
+      }
     }
     
     if (verbose() && debug_out.Edge()) {
@@ -463,5 +467,5 @@ std::ostream& operator<<(std::ostream& os, const FifoTaskState& state) {
       return os << "kOnCpu";
   }
 }
-
+}  // namespace per_cpu
 }  //  namespace ghost
