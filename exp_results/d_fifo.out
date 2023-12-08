@@ -1,0 +1,67 @@
+
+0.0
+
+gtid median=5.6826059458372856e+16 mean=5.6826059458372856e+16 stdev=1148402441156.2012
+created_at_us median=1702070945643571.0 mean=1702070945643571 stdev=52.223296786709355
+block_time_us median=159.0 mean=188.91666666666666 stdev=83.81414323406645
+runnable_time_us median=502312.5 mean=503782.5833333333 stdev=12990.938026586304
+queued_time_us median=51.5 mean=64.08333333333333 stdev=34.92448563643704
+on_cpu_time_us median=84.5 mean=89.08333333333333 stdev=23.80014642175484
+yielding_time_us median=0.0 mean=0 stdev=0.0
+died_at_us median=0.0 mean=0 stdev=0.0
+preempt_count median=0.0 mean=0 stdev=0.0
+0.1
+
+gtid median=5.687003992348392e+16 mean=5.687003992348392e+16 stdev=1148402441156.2012
+created_at_us median=1702070960629301.5 mean=1702070960629301.5 stdev=64.2346550476525
+block_time_us median=142.5 mean=242.25 stdev=260.16817113691536
+runnable_time_us median=505198.0 mean=508792.5833333333 stdev=13386.132236951476
+queued_time_us median=65.0 mean=98.5 stdev=83.12914377914971
+on_cpu_time_us median=103.5 mean=126.75 stdev=93.88012181887747
+yielding_time_us median=0.0 mean=0 stdev=0.0
+died_at_us median=0.0 mean=0 stdev=0.0
+preempt_count median=0.0 mean=0 stdev=0.0
+0.2
+
+gtid median=5.691621941185053e+16 mean=5.691621941185053e+16 stdev=1175427372546.7947
+created_at_us median=1702070978051795.5 mean=1702070978051795.5 stdev=243.20773014030618
+block_time_us median=0.0 mean=1.125 stdev=2.2320714274285347
+runnable_time_us median=727622.0 mean=708225.25 stdev=493340.3549526287
+queued_time_us median=31.5 mean=38.375 stdev=45.92832148343454
+on_cpu_time_us median=15.5 mean=20.5 stdev=19.508240017270357
+yielding_time_us median=0.0 mean=0 stdev=0.0
+died_at_us median=0.0 mean=0 stdev=0.0
+preempt_count median=0.0 mean=0 stdev=0.0
+0.3
+
+gtid median=56961299388589366 mean=5.696028445477911e+16 stdev=1141017139850.3718
+created_at_us median=1702071039493984 mean=1702071039493961.8 stdev=24.905977039813
+block_time_us median=0 mean=0.6153846153846154 stdev=1.5021352323976216
+runnable_time_us median=912837 mean=795361.4615384615 stdev=550652.2651110552
+queued_time_us median=13 mean=15.923076923076923 stdev=12.086228654006305
+on_cpu_time_us median=14 mean=14.153846153846153 stdev=11.943241839677603
+yielding_time_us median=0 mean=0 stdev=0.0
+died_at_us median=0 mean=261857083702306.78 stdev=639185220833458.0
+preempt_count median=0 mean=0 stdev=0.0
+0.4
+
+gtid median=5.70063793653282e+16 mean=5.70063793653282e+16 stdev=1128075127964.5989
+created_at_us median=1702071057435018.5 mean=1702071057435018.5 stdev=52.83788513238544
+block_time_us median=0.0 mean=0.25 stdev=0.910465468000326
+runnable_time_us median=577513.5 mean=576175.05 stdev=268646.9956542414
+queued_time_us median=12.0 mean=16.6 stdev=19.760140634487822
+on_cpu_time_us median=9.5 mean=11.85 stdev=8.561080846666377
+yielding_time_us median=0.0 mean=0 stdev=0.0
+died_at_us median=0.0 mean=0 stdev=0.0
+preempt_count median=0.0 mean=0 stdev=0.0
+0.5
+
+gtid median=5.677987997000624e+16 mean=5.677987997000624e+16 stdev=1135570726223.9448
+created_at_us median=1702070921097546.0 mean=1702070921097546 stdev=54.73816462639816
+block_time_us median=0.0 mean=5.625 stdev=15.439667526644909
+runnable_time_us median=694490.5 mean=806564.4375 stdev=606901.8812590131
+queued_time_us median=31.5 mean=3486.75 stdev=9785.25321423348
+on_cpu_time_us median=15.5 mean=16.8125 stdev=15.258740664506579
+yielding_time_us median=0.0 mean=0 stdev=0.0
+died_at_us median=0.0 mean=0 stdev=0.0
+preempt_count median=0.0 mean=0 stdev=0.0
