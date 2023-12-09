@@ -12,7 +12,6 @@ namespace ghost
     void OrcaFifoAgent::perCpuAgentThread()
     {
         CHECK_NE(per_cpu_scheduler, nullptr);
-        CHECK_EQ(curSched, FIFOSCHEDTYPE::PER_CPU);
         gtid().assign_name("Agent:" + std::to_string(cpu().id()));
         if (verbose() > 1)
         {
@@ -74,7 +73,6 @@ namespace ghost
     void OrcaFifoAgent::centralizedAgentThread()
     {
         CHECK_NE(centralized_scheduler, nullptr);
-        CHECK_EQ(curSched, FIFOSCHEDTYPE::CENT);
         Channel &centralized_channel = centralized_scheduler->GetDefaultChannel();
         gtid().assign_name("Agent:" + std::to_string(cpu().id()));
         if (verbose() > 1)
