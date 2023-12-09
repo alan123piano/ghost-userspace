@@ -10,6 +10,7 @@
 
 namespace ghost
 {   
+    namespace per_cpu{}
     class per_cpu::FifoScheduler;
     template <class EnclaveType>
     class per_cpu::FifoAgent;
