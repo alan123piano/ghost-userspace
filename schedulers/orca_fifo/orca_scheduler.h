@@ -100,7 +100,7 @@ namespace ghost
                 printf("Switch To PER_CPU\n");
                 // destroyCent();
                 // this->TerminateAgentTasks();
-                centralized_scheduler.reset(nullptr);
+                // centralized_scheduler.reset(nullptr);
                 per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
                 *currentSched = FIFOSCHEDTYPE::PER_CPU;
                 // initPerCPU();
@@ -109,7 +109,7 @@ namespace ghost
             {
                 printf("Switch To CENTRALIZED\n");
                 // this->TerminateAgentTasks();
-                per_cpu_scheduler.reset(nullptr);
+                // per_cpu_scheduler.reset(nullptr);
                 centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
                 *currentSched = FIFOSCHEDTYPE::CENT;
                 // initCent();
