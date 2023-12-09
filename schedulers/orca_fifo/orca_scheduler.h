@@ -14,7 +14,7 @@ namespace ghost
     {
         class FifoScheduler;
         class FifoAgent;
-        std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(ghost::Enclave *enclave, ghost::CpuList cpulist)
+        std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(ghost::Enclave *enclave, ghost::CpuList cpulist);
     }
 
     enum class FIFOSCHEDTYPE
