@@ -679,10 +679,12 @@ cc_library(
     srcs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.cc",
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
+        "schedulers/orca_fifo/orca_scheduler.h",
     ],
     hdrs = [
         "schedulers/fifo/per_cpu/fifo_scheduler.h",
         "schedulers/fifo/ProfilingAgentConfig.h",
+        "schedulers/orca_fifo/orca_scheduler.h",
     ],
     copts = compiler_flags,
     deps = [
