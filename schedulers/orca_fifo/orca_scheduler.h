@@ -50,7 +50,13 @@ namespace ghost
         {
         }
         void AgentThread() override;
-        Scheduler *AgentScheduler() const override { return scheduler_; }
+        Scheduler *AgentScheduler() const override
+        {
+            if (curSched == FIFOSCHEDTYPE::CENT)
+                return centralized_scheduler;
+            else
+                return per_cpu_scheduler;
+        }
 
     private:
         per_cpu::FifoScheduler *per_cpu_scheduler;
