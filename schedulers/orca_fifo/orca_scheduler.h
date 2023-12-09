@@ -50,8 +50,8 @@ namespace ghost
         {
         }
         void AgentThread() override;
-        void perCpuAgentThread();
-        void centralizedAgentThread();
+        void perCpuAgentThread(PeriodicEdge &debug_out, PeriodicEdge &profile_peroid);
+        void centralizedAgentThread(PeriodicEdge &debug_out, PeriodicEdge &profile_peroid);
         Scheduler *AgentScheduler() const override
         {
             if (*curSched == FIFOSCHEDTYPE::CENT)
