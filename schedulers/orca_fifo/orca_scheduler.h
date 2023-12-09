@@ -50,6 +50,8 @@ namespace ghost
         {
         }
         void AgentThread() override;
+        void perCpuAgentThread();
+        void centralizedAgentThread();
         Scheduler *AgentScheduler() const override
         {
             if (curSched == FIFOSCHEDTYPE::CENT)
@@ -144,10 +146,8 @@ namespace ghost
 
         std::unique_ptr<Agent> MakeAgent(const Cpu &cpu) override
         {
-            if (currentSched == FIFOSCHEDTYPE::PER_CPU)
-                return std::make_unique<per_cpu::FifoAgent>(&this->enclave_, cpu, per_cpu_scheduler.get(), profiler_cpu, orcaMessenger.get());
-            else
-                return std::make_unique<centralized::FifoAgent>(&this->enclave_, cpu, centralized_scheduler.get(), orcaMessenger.get());
+            return std::make_unique<OrcaFifoAgent>(&this->enclave_, cpu, per_cpu_scheduler.get(), centralized_scheduler.get(),
+                                                   profiler_cpu, orcaMessenger.get(), currentSched, this);
         }
 
         void RpcHandler(int64_t req, const AgentRpcArgs &args,

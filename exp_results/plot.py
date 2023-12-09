@@ -10,6 +10,7 @@ class STAT(Enum):
     MEDIAN = 0
     MEAN = 1
     STDEV = 2
+    CV = 3
 
 
 def populate_data(file_name: str):
@@ -33,10 +34,13 @@ def populate_data(file_name: str):
                 median = float(match.group(1))
                 mean = float(match.group(2))
                 stdev = float(match.group(3))
+                cv = -1
+                if mean != 0:
+                    cv = stdev / mean
                 metric = line.split()[0]
 
                 if metric in res.keys():
-                    res[metric].append((mean, median, stdev))
+                    res[metric].append((mean, median, stdev, cv))
 
     return res
 
@@ -56,6 +60,8 @@ def draw(data, stat: STAT, metric: str):
         stat_name = "Mean"
     elif stat == STAT.STDEV:
         stat_name = "stdev"
+    elif stat == STAT.CV:
+        stat_name = "Coefficient of Variance"
     # # Add labels and title
     plt.xlabel("ratio of long tasks")
     plt.ylabel(f"{metric}")
