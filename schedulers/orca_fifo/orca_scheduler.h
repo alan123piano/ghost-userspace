@@ -78,7 +78,8 @@ namespace ghost
         {
             orcaMessenger = std::make_unique<OrcaMessenger>();
             per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
-            centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
+            centralized_scheduler.reset(nullptr);
+            // centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
             currentSched = std::make_unique<FIFOSCHEDTYPE>();
@@ -99,7 +100,8 @@ namespace ghost
                 printf("Switch To PER_CPU\n");
                 // destroyCent();
                 // this->TerminateAgentTasks();
-                // centralized_scheduler.reset(nullptr);
+                centralized_scheduler.reset(nullptr);
+                per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
                 *currentSched = FIFOSCHEDTYPE::PER_CPU;
                 // initPerCPU();
             }
@@ -107,7 +109,8 @@ namespace ghost
             {
                 printf("Switch To CENTRALIZED\n");
                 // this->TerminateAgentTasks();
-                // per_cpu_scheduler.reset(nullptr);
+                per_cpu_scheduler.reset(nullptr);
+                centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
                 *currentSched = FIFOSCHEDTYPE::CENT;
                 // initCent();
             }
