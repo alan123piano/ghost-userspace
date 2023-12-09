@@ -43,9 +43,10 @@ namespace ghost
     class OrcaFifoAgent : public LocalAgent
     {
     public:
-        OrcaFifoAgent(Enclave *enclave, Cpu cpu, FifoScheduler *scheduler, int32_t _profiler_cpu, OrcaMessenger *_orcaMessenger, FIFOSCHEDTYPE _sched,
-                      FullOrcaFifoAgent *fa)
-            : LocalAgent(enclave, cpu), scheduler_(scheduler), profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), curSched(_sched), fullOrcaAgent(fa)
+        OrcaFifoAgent(Enclave *enclave, Cpu cpu, per_cpu::FifoScheduler *per_cpu_scheduler, centralized::FifoScheduler *centralized_scheduler,
+                      int32_t _profiler_cpu, OrcaMessenger *_orcaMessenger, FIFOSCHEDTYPE _sched, FullOrcaFifoAgent<LocalEnclave> *fa)
+            : LocalAgent(enclave, cpu), per_cpu_scheduler(per_cpu_scheduler), centralized_scheduler(centralized_scheduler),
+              profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), curSched(_sched), fullOrcaAgent(fa)
         {
         }
         void AgentThread() override;
@@ -57,7 +58,7 @@ namespace ghost
         int32_t profiler_cpu;
         OrcaMessenger *orcaMessenger;
         FIFOSCHEDTYPE curSched;
-        FullOrcaFifoAgent *fullOrcaAgent;
+        FullOrcaFifoAgent<LocalEnclave> *fullOrcaAgent;
     };
 
     template <class EnclaveType>
