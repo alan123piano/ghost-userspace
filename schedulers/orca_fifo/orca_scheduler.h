@@ -13,8 +13,6 @@ namespace ghost
     namespace per_cpu
     {
         class FifoScheduler;
-        static constexpr int FifoScheduler::kCountAllTasks;
-        static constexpr int FifoScheduler::kDebugRunqueue;
         class FifoAgent;
         std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(ghost::Enclave *enclave, ghost::CpuList cpulist);
     }
@@ -136,14 +134,14 @@ namespace ghost
         {
             switch (req)
             {
-            case centralized::FifoScheduler::kDebugRunqueue:
+            case 1: // centralized::FifoScheduler::kDebugRunqueue:
                 if (currentSched == FIFOSCHEDTYPE::PER_CPU)
                     per_cpu_scheduler->debug_runqueue_ = true;
                 else
                     centralized_scheduler->debug_runqueue_ = true;
                 response.response_code = 0;
                 return;
-            case per_cpu::FifoScheduler::kCountAllTasks:
+            case 2: // per_cpu::FifoScheduler::kCountAllTasks:
                 if (currentSched == FIFOSCHEDTYPE::PER_CPU)
                     response.response_code = per_cpu_scheduler->CountAllTasks();
                 else
