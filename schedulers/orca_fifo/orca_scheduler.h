@@ -9,7 +9,10 @@
 #include "schedulers/orca_fifo/centralized/fifo_scheduler.h"
 
 namespace ghost
-{
+{   
+    class per_cpu::FifoScheduler;
+    class per_cpu::FifoAgent;
+
     enum class FIFOSCHEDTYPE
     {
         PER_CPU,
@@ -65,6 +68,7 @@ namespace ghost
         {
             if (to == FIFOSCHEDTYPE::PER_CPU)
             {
+                printf("Switch To PER_CPU\n");
                 CHECK_EQ(currentSched, FIFOSCHEDTYPE::CENT);
                 destroyCent();
                 this->TerminateAgentTasks();
@@ -75,6 +79,7 @@ namespace ghost
             }
             else
             {
+                printf("Switch To CENTRALIZED\n");
                 CHECK_EQ(currentSched, FIFOSCHEDTYPE::PER_CPU);
                 this->TerminateAgentTasks();
                 delete per_cpu_scheduler;
@@ -143,6 +148,11 @@ namespace ghost
                 return;
             }
         }
+
+        typedef std::function<void(FIFOSCHEDTYPE to)>
+            SwitchCall;
+        const FullFifoAgent::SwitchCall kSwitchCall =
+            absl::bind_front(&FullFifoAgent::SwitchCall, this);
 
     private:
         FIFOSCHEDTYPE currentSched;
