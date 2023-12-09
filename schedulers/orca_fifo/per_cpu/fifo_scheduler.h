@@ -204,8 +204,8 @@ class FifoAgent : public LocalAgent {
 
  private:
   FifoScheduler* scheduler_;
-  OrcaMessenger* orcaMessenger;
   int32_t profiler_cpu;
+  OrcaMessenger* orcaMessenger;
 };
 
 template <class EnclaveType>
