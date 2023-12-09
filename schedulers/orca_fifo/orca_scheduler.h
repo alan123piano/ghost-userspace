@@ -125,13 +125,6 @@ namespace ghost
         {
             switch (req)
             {
-            case per_cpu::FifoScheduler::kDebugRunqueue:
-                if (currentSched == FIFOSCHEDTYPE::PER_CPU)
-                    per_cpu_scheduler->debug_runqueue_ = true;
-                else
-                    centralized_scheduler->debug_runqueue_ = true;
-                response.response_code = 0;
-                return;
             case centralized::FifoScheduler::kDebugRunqueue:
                 if (currentSched == FIFOSCHEDTYPE::PER_CPU)
                     per_cpu_scheduler->debug_runqueue_ = true;
@@ -139,7 +132,6 @@ namespace ghost
                     centralized_scheduler->debug_runqueue_ = true;
                 response.response_code = 0;
                 return;
-
             case per_cpu::FifoScheduler::kCountAllTasks:
                 if (currentSched == FIFOSCHEDTYPE::PER_CPU)
                     response.response_code = per_cpu_scheduler->CountAllTasks();

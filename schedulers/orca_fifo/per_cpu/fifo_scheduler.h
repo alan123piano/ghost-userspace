@@ -246,8 +246,8 @@ class FullFifoAgent : public FullAgent<EnclaveType> {
 
  private:
   std::unique_ptr<FifoScheduler> scheduler_;
-  std::unique_ptr<OrcaMessenger> orcaMessenger;
   int32_t profiler_cpu;
+  std::unique_ptr<OrcaMessenger> orcaMessenger;
 };
 } // namespace per_cpu
 }  // namespace ghost

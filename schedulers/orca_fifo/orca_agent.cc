@@ -20,7 +20,9 @@ ABSL_FLAG(int32_t, globalcpu, -1,
 ABSL_FLAG(int32_t, profiler_cpu, -1,
           "Profiler cpu. If -1, then defaults to the first cpu in <cpus>");
 ABSL_FLAG(std::string, enclave, "", "Connect to preexisting enclave directory");
-
+ABSL_FLAG(absl::Duration, preemption_time_slice, absl::InfiniteDuration(),
+          "A task is preempted after running for this time slice (default = "
+          "infinite time slice)");
 namespace ghost
 {
 
