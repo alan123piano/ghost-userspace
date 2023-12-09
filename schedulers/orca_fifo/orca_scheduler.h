@@ -98,7 +98,6 @@ namespace ghost
             if (currentSched == FIFOSCHEDTYPE::CENT)
             {
                 printf("Switch To PER_CPU\n");
-                CHECK_EQ(currentSched, FIFOSCHEDTYPE::CENT);
                 destroyCent();
                 this->TerminateAgentTasks();
                 centralized_scheduler.reset(nullptr);
@@ -108,7 +107,6 @@ namespace ghost
             else
             {
                 printf("Switch To CENTRALIZED\n");
-                CHECK_EQ(currentSched, FIFOSCHEDTYPE::PER_CPU);
                 this->TerminateAgentTasks();
                 per_cpu_scheduler.reset(nullptr);
                 currentSched = FIFOSCHEDTYPE::CENT;
