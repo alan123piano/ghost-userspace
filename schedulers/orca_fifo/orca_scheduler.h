@@ -81,7 +81,8 @@ namespace ghost
             centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
-            currentSched = std::make_unique<FIFOSCHEDTYPE>(new FIFOSCHEDTYPE(FIFOSCHEDTYPE::PER_CPU));
+            currentSched = std::make_unique<FIFOSCHEDTYPE>();
+            *currentSched = FIFOSCHEDTYPE::PER_CPU;
         }
         // void initPerCPU()
         // {
