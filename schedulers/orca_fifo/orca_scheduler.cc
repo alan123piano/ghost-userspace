@@ -16,12 +16,14 @@ namespace ghost
         PeriodicEdge debug_out(absl::Seconds(1));
         PeriodicEdge profile_peroid(absl::Milliseconds(1));
 
-        while (!Finished() || !per_cpu_scheduler->Empty(cpu()))
+        while (!Finished() || (*curSched != FIFOSCHEDTYPE::PER_CPU || !per_cpu_scheduler->Empty(cpu())))
         {
             if (*curSched == FIFOSCHEDTYPE::PER_CPU)
                 perCpuAgentThread(debug_out, profile_peroid);
             else
+            {
                 centralizedAgentThread(debug_out, profile_peroid);
+            }
         }
     }
     void OrcaFifoAgent::perCpuAgentThread(PeriodicEdge &debug_out, PeriodicEdge &profile_peroid)
@@ -30,6 +32,7 @@ namespace ghost
 
         if (profile_peroid.Edge() && cpu().id() == this->profiler_cpu)
         {
+            printf("PerCPU agent thread\n");
             auto res = per_cpu_scheduler->CollectMetric();
             absl::MutexLock lock(&(per_cpu_scheduler->deadTasksMu_));
             for (auto &m : res)
@@ -102,6 +105,7 @@ namespace ghost
 
             if (profile_peroid.Edge())
             {
+                printf("Cent agent thread\n");
                 auto res = centralized_scheduler->CollectMetric();
                 if (debug_out.Edge())
                 {
