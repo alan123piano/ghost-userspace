@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     absl::InitializeSymbolizer(argv[0]);
     absl::ParseCommandLine(argc, argv);
 
-    ghost::ProfilingAgentConfig config;
+    ghost::OrcaFifoAgentConfig config;
     ghost::ParseAgentConfig(&config);
 
     printf("Initializing...\n");
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     // TODO: this is racy - uap could be deleted already
     ghost::GhostSignals::AddHandler(SIGUSR1, [uap](int)
                                     {
-    uap->Rpc(ghost::FifoScheduler::kDebugRunqueue);
+    uap->Rpc(ghost::centralized::FifoScheduler::kDebugRunqueue);
     return false; });
 
     exit.WaitForNotification();
