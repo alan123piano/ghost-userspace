@@ -102,7 +102,7 @@ namespace ghost
                 // destroyCent();
                 // this->TerminateAgentTasks();
                 // centralized_scheduler.reset(nullptr);
-                for (auto &agent : agents_)
+                for (auto &agent : this->agents_)
                 {
                     dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::PER_CPU;
                 }
@@ -114,7 +114,7 @@ namespace ghost
                 printf("Switch To CENTRALIZED\n");
                 // this->TerminateAgentTasks();
                 // per_cpu_scheduler.reset(nullptr);
-                for (auto &agent : agents_)
+                for (auto &agent : this->agents_)
                 {
                     dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::CENT;
                 }
