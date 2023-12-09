@@ -136,6 +136,7 @@ namespace ghost
                         centralized_scheduler->deadTasks.clear();
                         centralized_scheduler->ClearMetric();
                     }
+                    fullOrcaAgent->switchTo();
                 }
 
                 if (verbose() && debug_out.Edge())

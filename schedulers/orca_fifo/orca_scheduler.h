@@ -80,51 +80,23 @@ namespace ghost
             currentSched = std::make_unique<FIFOSCHEDTYPE>();
             *currentSched = FIFOSCHEDTYPE::PER_CPU;
             per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
-            // centralized_scheduler.reset(nullptr);
             centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
         }
-        // void initPerCPU()
-        // {
-        //     per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
-        // }
-        // void initCent()
-        // {
-        //     centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
-        // }
+
         void switchTo()
         {
-            // for (auto &agent : this->agents_)
-            // {
-            //     agent->TerminateBegin();
-            // }
-            // for (auto &agent : this->agents_)
-            // {
-            //     agent->TerminateComplete();
-            // }
-            // agents_.clear();
-
             if (*currentSched == FIFOSCHEDTYPE::CENT)
             {
                 printf("Switch To PER_CPU\n");
-                // destroyCent();
-                // this->TerminateAgentTasks();
-                // centralized_scheduler.reset(nullptr);
-                // per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
                 *currentSched = FIFOSCHEDTYPE::PER_CPU;
-                // initPerCPU();
             }
             else
             {
                 printf("Switch To CENTRALIZED\n");
-                // this->TerminateAgentTasks();
-                // per_cpu_scheduler.reset(nullptr);
-                // centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
                 *currentSched = FIFOSCHEDTYPE::CENT;
-                // initCent();
             }
-            // this->StartAgentTasks();
         }
 
         void destroyCent()
