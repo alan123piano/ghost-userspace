@@ -78,6 +78,7 @@ namespace ghost
         {
             orcaMessenger = std::make_unique<OrcaMessenger>();
             initPerCPU();
+            initCent();
         }
         void initPerCPU()
         {
@@ -98,19 +99,27 @@ namespace ghost
             if (currentSched == FIFOSCHEDTYPE::CENT)
             {
                 printf("Switch To PER_CPU\n");
-                destroyCent();
-                this->TerminateAgentTasks();
-                centralized_scheduler.reset(nullptr);
+                // destroyCent();
+                // this->TerminateAgentTasks();
+                // centralized_scheduler.reset(nullptr);
+                for (auto &agent : agents_)
+                {
+                    dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::PER_CPU;
+                }
                 currentSched = FIFOSCHEDTYPE::PER_CPU;
-                initPerCPU();
+                // initPerCPU();
             }
             else
             {
-                printf("Switch To CENTRALIZED\n");
-                this->TerminateAgentTasks();
-                per_cpu_scheduler.reset(nullptr);
+                // printf("Switch To CENTRALIZED\n");
+                // this->TerminateAgentTasks();
+                // per_cpu_scheduler.reset(nullptr);
+                for (auto &agent : agents_)
+                {
+                    dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::CENT;
+                }
                 currentSched = FIFOSCHEDTYPE::CENT;
-                initCent();
+                // initCent();
             }
         }
 
