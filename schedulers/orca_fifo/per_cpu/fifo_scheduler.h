@@ -18,7 +18,8 @@
 #include "schedulers/orca_fifo/orca_scheduler.h"
 
 namespace ghost {
-
+  
+template <class EnclaveType>
 class FullFifoAgent; 
 
 namespace per_cpu{
