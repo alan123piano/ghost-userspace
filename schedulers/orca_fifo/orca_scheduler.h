@@ -111,7 +111,7 @@ namespace ghost
             }
             else
             {
-                // printf("Switch To CENTRALIZED\n");
+                printf("Switch To CENTRALIZED\n");
                 // this->TerminateAgentTasks();
                 // per_cpu_scheduler.reset(nullptr);
                 for (auto &agent : agents_)
