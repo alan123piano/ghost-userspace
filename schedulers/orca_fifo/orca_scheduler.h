@@ -76,8 +76,7 @@ namespace ghost
                 CHECK_EQ(currentSched, FIFOSCHEDTYPE::CENT);
                 destroyCent();
                 this->TerminateAgentTasks();
-                delete centralized_scheduler;
-                centralized_scheduler = nullptr;
+                centralized_scheduler.reset(nullptr);
                 currentSched = FIFOSCHEDTYPE::PER_CPU;
                 initPerCPU();
             }
@@ -86,8 +85,7 @@ namespace ghost
                 printf("Switch To CENTRALIZED\n");
                 CHECK_EQ(currentSched, FIFOSCHEDTYPE::PER_CPU);
                 this->TerminateAgentTasks();
-                delete per_cpu_scheduler;
-                per_cpu_scheduler = nullptr;
+                per_cpu_scheduler.reset(nullptr);
                 currentSched = FIFOSCHEDTYPE::CENT;
                 initCent();
             }
