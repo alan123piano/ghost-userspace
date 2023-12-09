@@ -77,13 +77,13 @@ namespace ghost
                                                                  preemption_time_slice(config.preemption_time_slice_)
         {
             orcaMessenger = std::make_unique<OrcaMessenger>();
+            currentSched = std::make_unique<FIFOSCHEDTYPE>();
+            *currentSched = FIFOSCHEDTYPE::PER_CPU;
             per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
-            centralized_scheduler.reset(nullptr);
+            // centralized_scheduler.reset(nullptr);
             // centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
-            currentSched = std::make_unique<FIFOSCHEDTYPE>();
-            *currentSched = FIFOSCHEDTYPE::PER_CPU;
         }
         // void initPerCPU()
         // {
