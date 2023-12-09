@@ -1452,6 +1452,7 @@ cc_library(
         "schedulers/orca_fifo/centralized/fifo_scheduler.h",
         "schedulers/orca_fifo/centralized/fifo_scheduler.cc",
         "schedulers/orca_fifo/orca_scheduler.h",
+        "schedulers/orca_fifo/orca_scheduler.cc",
     ],
     hdrs = [
         "schedulers/orca_fifo/orca_scheduler.h",
