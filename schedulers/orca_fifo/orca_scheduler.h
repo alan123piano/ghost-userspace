@@ -10,6 +10,9 @@
 
 namespace ghost
 {
+    template <class EnclaveType>
+    class FullOrcaFifoAgent;
+
     enum class FIFOSCHEDTYPE
     {
         PER_CPU,
@@ -37,12 +40,32 @@ namespace ghost
         absl::Duration preemption_time_slice_ = absl::InfiniteDuration();
     };
 
-    template <class EnclaveType>
-    class FullFifoAgent : public FullAgent<EnclaveType>
+    class OrcaFifoAgent : public LocalAgent
     {
     public:
-        explicit FullFifoAgent(OrcaFifoAgentConfig config) : FullAgent<EnclaveType>(config), profiler_cpu(config.profiler_cpu), global_cpu(config.global_cpu_),
-                                                             preemption_time_slice(config.preemption_time_slice_)
+        OrcaFifoAgent(Enclave *enclave, Cpu cpu, FifoScheduler *scheduler, int32_t _profiler_cpu, OrcaMessenger *_orcaMessenger, FIFOSCHEDTYPE _sched,
+                      FullOrcaFifoAgent *fa)
+            : LocalAgent(enclave, cpu), scheduler_(scheduler), profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), curSched(_sched), fullOrcaAgent(fa)
+        {
+        }
+        void AgentThread() override;
+        Scheduler *AgentScheduler() const override { return scheduler_; }
+
+    private:
+        per_cpu::FifoScheduler *per_cpu_scheduler;
+        centralized::FifoScheduler *centralized_scheduler;
+        int32_t profiler_cpu;
+        OrcaMessenger *orcaMessenger;
+        FIFOSCHEDTYPE curSched;
+        FullOrcaFifoAgent *fullOrcaAgent;
+    };
+
+    template <class EnclaveType>
+    class FullOrcaFifoAgent : public FullAgent<EnclaveType>
+    {
+    public:
+        explicit FullOrcaFifoAgent(OrcaFifoAgentConfig config) : FullAgent<EnclaveType>(config), profiler_cpu(config.profiler_cpu), global_cpu(config.global_cpu_),
+                                                                 preemption_time_slice(config.preemption_time_slice_)
         {
             orcaMessenger = std::make_unique<OrcaMessenger>();
             initPerCPU();
@@ -103,7 +126,7 @@ namespace ghost
             CHECK_EQ(this->agents_.front()->cpu().id(), global_cpuid);
         }
 
-        ~FullFifoAgent() override
+        ~FullOrcaFifoAgent() override
         {
             if (currentSched == FIFOSCHEDTYPE::CENT)
             {

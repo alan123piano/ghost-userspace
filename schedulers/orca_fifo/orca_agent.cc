@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     printf("Initializing...\n");
 
     // Using new so we can destruct the object before printing Done
-    auto uap = new ghost::AgentProcess<ghost::FullFifoAgent<ghost::LocalEnclave>,
+    auto uap = new ghost::AgentProcess<ghost::FullOrcaFifoAgent<ghost::LocalEnclave>,
                                        ghost::OrcaFifoAgentConfig>(config);
 
     ghost::GhostHelper()->InitCore();
