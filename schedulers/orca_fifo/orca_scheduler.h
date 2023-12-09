@@ -13,6 +13,8 @@ namespace ghost
     namespace per_cpu
     {
         class FifoScheduler;
+        static constexpr int FifoScheduler::kCountAllTasks;
+        static constexpr int FifoScheduler::kDebugRunqueue;
         class FifoAgent;
         std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(ghost::Enclave *enclave, ghost::CpuList cpulist);
     }
