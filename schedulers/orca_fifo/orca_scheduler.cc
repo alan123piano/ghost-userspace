@@ -19,9 +19,9 @@ namespace ghost
         while (!Finished() || !per_cpu_scheduler->Empty(cpu()))
         {
             if (*curSched == FIFOSCHEDTYPE::PER_CPU)
-                perCpuAgentThread();
+                perCpuAgentThread(debug_out, profile_peroid);
             else
-                centralizedAgentThread();
+                centralizedAgentThread(debug_out, profile_peroid);
         }
     }
     void OrcaFifoAgent::perCpuAgentThread(PeriodicEdge &debug_out, PeriodicEdge &profile_peroid)
@@ -88,7 +88,7 @@ namespace ghost
             if (boosted_priority() &&
                 centralized_scheduler->PickNextGlobalCPU(agent_barrier, cpu()))
             {
-                continue;
+                return;
             }
 
             Message msg;
