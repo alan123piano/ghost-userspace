@@ -19,9 +19,6 @@
 
 namespace ghost {
 
-template <class EnclaveType>
-class FullFifoAgent; 
-
 namespace per_cpu{
 
 enum class FifoTaskState {
@@ -202,10 +199,6 @@ class FifoAgent : public LocalAgent {
   FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler ,int32_t _profiler_cpu, OrcaMessenger* _orcaMessenger)
       : LocalAgent(enclave, cpu), scheduler_(scheduler) , profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger)
       {}
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler ,int32_t _profiler_cpu, OrcaMessenger* _orcaMessenger, ghost::FullFifoAgent<ghost::LocalEnclave>* _ffa)
-      : LocalAgent(enclave, cpu), scheduler_(scheduler) , profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), ffa(_ffa)
-      {}
-
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return scheduler_; }
 
@@ -213,7 +206,6 @@ class FifoAgent : public LocalAgent {
   FifoScheduler* scheduler_;
   int32_t profiler_cpu;
   OrcaMessenger* orcaMessenger;
-  ghost::FullFifoAgent<ghost::LocalEnclave>* ffa;
 };
 
 template <class EnclaveType>

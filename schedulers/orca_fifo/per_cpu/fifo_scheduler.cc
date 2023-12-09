@@ -434,7 +434,6 @@ void FifoAgent::AgentThread() {
       }
       scheduler_->deadTasks.clear();
       scheduler_->ClearMetric();
-      this->ffa->switchTo();
     }
     
     if (verbose() && debug_out.Edge()) {

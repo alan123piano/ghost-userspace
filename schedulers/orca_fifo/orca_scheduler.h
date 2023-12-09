@@ -10,13 +10,6 @@
 
 namespace ghost
 {
-    namespace per_cpu
-    {
-        class FifoScheduler;
-        class FifoAgent;
-        std::unique_ptr<FifoScheduler> MultiThreadedFifoScheduler(ghost::Enclave *enclave, ghost::CpuList cpulist);
-    }
-
     enum class FIFOSCHEDTYPE
     {
         PER_CPU,
