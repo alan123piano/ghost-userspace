@@ -89,7 +89,7 @@ namespace ghost
         void initCent()
         {
             currentSched = FIFOSCHEDTYPE::CENT;
-            centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice_);
+            centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
         }
