@@ -9,12 +9,7 @@
 #include "schedulers/orca_fifo/centralized/fifo_scheduler.h"
 
 namespace ghost
-{   
-    namespace per_cpu{}
-    class per_cpu::FifoScheduler;
-    template <class EnclaveType>
-    class per_cpu::FifoAgent;
-
+{
     enum class FIFOSCHEDTYPE
     {
         PER_CPU,
@@ -150,11 +145,6 @@ namespace ghost
                 return;
             }
         }
-
-        typedef std::function<void(FIFOSCHEDTYPE to)>
-            SwitchCall;
-        const FullFifoAgent::SwitchCall kSwitchCall =
-            absl::bind_front(&FullFifoAgent::SwitchCall, this);
 
     private:
         FIFOSCHEDTYPE currentSched;

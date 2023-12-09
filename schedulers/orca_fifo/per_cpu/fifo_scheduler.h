@@ -18,7 +18,7 @@
 #include "schedulers/orca_fifo/orca_scheduler.h"
 
 namespace ghost {
-  
+
 template <class EnclaveType>
 class FullFifoAgent; 
 
@@ -202,9 +202,6 @@ class FifoAgent : public LocalAgent {
   FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler ,int32_t _profiler_cpu, OrcaMessenger* _orcaMessenger)
       : LocalAgent(enclave, cpu), scheduler_(scheduler) , profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger)
       {}
-  FifoAgent(Enclave* enclave, Cpu cpu, FifoScheduler* scheduler ,int32_t _profiler_cpu, OrcaMessenger* _orcaMessenger, ghost::FullFifoAgent<ghost::LocalEnclave>* ffa)
-      : LocalAgent(enclave, cpu), scheduler_(scheduler) , profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), fullFifoAgent(ffa)
-      {}
 
   void AgentThread() override;
   Scheduler* AgentScheduler() const override { return scheduler_; }
@@ -213,7 +210,6 @@ class FifoAgent : public LocalAgent {
   FifoScheduler* scheduler_;
   int32_t profiler_cpu;
   OrcaMessenger* orcaMessenger;
-  ghost::FullFifoAgent* fullFifoAgent;
 };
 
 template <class EnclaveType>
