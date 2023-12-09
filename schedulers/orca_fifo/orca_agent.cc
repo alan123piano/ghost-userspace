@@ -55,7 +55,7 @@ namespace ghost
         }
         CHECK(ghost_cpus.IsSet(globalcpu));
 
-        config->global_cpu_ = topology->cpu(globalcpu);
+        config->global_cpu_ = topology->cpu(globalcpu).id();
         config->preemption_time_slice_ = absl::GetFlag(FLAGS_preemption_time_slice);
 
         std::string enclave = absl::GetFlag(FLAGS_enclave);
