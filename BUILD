@@ -1,7 +1,7 @@
 # Note: If you modify this BUILD file, please contact jhumphri @first to ensure
 # that you are not breaking the Copybara script.
 
-    load("@rules_license//rules:license.bzl", "license")
+load("@rules_license//rules:license.bzl", "license")
 load("//:bpf/bpf.bzl", "bpf_skeleton")
 
 package(
@@ -28,7 +28,7 @@ license(
 #
 # BSD 3 - clause: All other code is covered by BSD 3 - clause.This includes the
 # library code in lib /, the experiments, all code in bpf / user /, etc.
-    licenses(["notice"])
+licenses(["notice"])
 
 exports_files(["LICENSE"])
 
