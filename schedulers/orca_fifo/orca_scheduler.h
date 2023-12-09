@@ -68,9 +68,9 @@ namespace ghost
             this->StartAgentTasks();
             this->enclave_.Ready();
         }
-        void switchTo(FIFOSCHEDTYPE to)
+        void switchTo()
         {
-            if (to == FIFOSCHEDTYPE::PER_CPU)
+            if (currentSched == FIFOSCHEDTYPE::CENT)
             {
                 printf("Switch To PER_CPU\n");
                 CHECK_EQ(currentSched, FIFOSCHEDTYPE::CENT);
