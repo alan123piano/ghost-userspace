@@ -16,7 +16,7 @@ namespace ghost
         PeriodicEdge debug_out(absl::Seconds(1));
         PeriodicEdge profile_peroid(absl::Milliseconds(1));
 
-        while (!Finished() || (*curSched != FIFOSCHEDTYPE::PER_CPU || !per_cpu_scheduler->Empty(cpu())))
+        while (!Finished() || (*curSched == FIFOSCHEDTYPE::PER_CPU && !per_cpu_scheduler->Empty(cpu())))
         {
             if (*curSched == FIFOSCHEDTYPE::PER_CPU)
                 perCpuAgentThread(debug_out, profile_peroid);
