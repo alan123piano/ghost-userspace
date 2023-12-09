@@ -115,7 +115,7 @@ namespace ghost
         std::unique_ptr<Agent> MakeAgent(const Cpu &cpu) override
         {
             if (currentSched == FIFOSCHEDTYPE::PER_CPU)
-                return std::make_unique<per_cpu::FifoAgent>(&this->enclave_, cpu, per_cpu_scheduler.get(), profiler_cpu, orcaMessenger.get(), this);
+                return std::make_unique<per_cpu::FifoAgent>(&this->enclave_, cpu, per_cpu_scheduler.get(), profiler_cpu, orcaMessenger.get());
             else
                 return std::make_unique<centralized::FifoAgent>(&this->enclave_, cpu, centralized_scheduler.get(), orcaMessenger.get());
         }
