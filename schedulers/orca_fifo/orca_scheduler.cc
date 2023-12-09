@@ -4,7 +4,7 @@ namespace ghost
 {
     void OrcaFifoAgent::AgentThread()
     {
-        if (curSched == FIFOSCHEDTYPE::PER_CPU)
+        if (*curSched == FIFOSCHEDTYPE::PER_CPU)
             perCpuAgentThread();
         else
             centralizedAgentThread();

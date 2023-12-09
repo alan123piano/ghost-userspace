@@ -44,7 +44,7 @@ namespace ghost
     {
     public:
         OrcaFifoAgent(Enclave *enclave, Cpu cpu, per_cpu::FifoScheduler *per_cpu_scheduler, centralized::FifoScheduler *centralized_scheduler,
-                      int32_t _profiler_cpu, OrcaMessenger *_orcaMessenger, FIFOSCHEDTYPE _sched, FullOrcaFifoAgent<LocalEnclave> *fa)
+                      int32_t _profiler_cpu, OrcaMessenger *_orcaMessenger, FIFOSCHEDTYPE *_sched, FullOrcaFifoAgent<LocalEnclave> *fa)
             : LocalAgent(enclave, cpu), per_cpu_scheduler(per_cpu_scheduler), centralized_scheduler(centralized_scheduler),
               profiler_cpu(_profiler_cpu), orcaMessenger(_orcaMessenger), curSched(_sched), fullOrcaAgent(fa)
         {
@@ -54,7 +54,7 @@ namespace ghost
         void centralizedAgentThread();
         Scheduler *AgentScheduler() const override
         {
-            if (curSched == FIFOSCHEDTYPE::CENT)
+            if (*curSched == FIFOSCHEDTYPE::CENT)
                 return centralized_scheduler;
             else
                 return per_cpu_scheduler;
@@ -65,7 +65,7 @@ namespace ghost
         centralized::FifoScheduler *centralized_scheduler;
         int32_t profiler_cpu;
         OrcaMessenger *orcaMessenger;
-        FIFOSCHEDTYPE curSched;
+        FIFOSCHEDTYPE *curSched;
         FullOrcaFifoAgent<LocalEnclave> *fullOrcaAgent;
     };
 
@@ -77,36 +77,29 @@ namespace ghost
                                                                  preemption_time_slice(config.preemption_time_slice_)
         {
             orcaMessenger = std::make_unique<OrcaMessenger>();
-            initPerCPU();
-            initCent();
-        }
-        void initPerCPU()
-        {
-            currentSched = FIFOSCHEDTYPE::PER_CPU;
             per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
-            this->StartAgentTasks();
-            this->enclave_.Ready();
-        }
-        void initCent()
-        {
-            currentSched = FIFOSCHEDTYPE::CENT;
             centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
             this->StartAgentTasks();
             this->enclave_.Ready();
+            currentSched = std::make_unique<FIFOSCHEDTYPE>(new FIFOSCHEDTYPE(FIFOSCHEDTYPE::PER_CPU));
         }
+        // void initPerCPU()
+        // {
+        //     per_cpu_scheduler = per_cpu::MultiThreadedFifoScheduler(&this->enclave_, *this->enclave_.cpus());
+        // }
+        // void initCent()
+        // {
+        //     centralized_scheduler = centralized::SingleThreadFifoScheduler(&this->enclave_, *this->enclave_.cpus(), this->global_cpu, this->preemption_time_slice);
+        // }
         void switchTo()
         {
-            if (currentSched == FIFOSCHEDTYPE::CENT)
+            if (*currentSched == FIFOSCHEDTYPE::CENT)
             {
                 printf("Switch To PER_CPU\n");
                 // destroyCent();
                 // this->TerminateAgentTasks();
                 // centralized_scheduler.reset(nullptr);
-                for (auto &agent : this->agents_)
-                {
-                    dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::PER_CPU;
-                }
-                currentSched = FIFOSCHEDTYPE::PER_CPU;
+                *currentSched = FIFOSCHEDTYPE::PER_CPU;
                 // initPerCPU();
             }
             else
@@ -114,17 +107,15 @@ namespace ghost
                 printf("Switch To CENTRALIZED\n");
                 // this->TerminateAgentTasks();
                 // per_cpu_scheduler.reset(nullptr);
-                for (auto &agent : this->agents_)
-                {
-                    dynamic_cast<OrcaFifoAgent *>(agent)->curSched = FIFOSCHEDTYPE::CENT;
-                }
-                currentSched = FIFOSCHEDTYPE::CENT;
+                *currentSched = FIFOSCHEDTYPE::CENT;
                 // initCent();
             }
         }
 
         void destroyCent()
         {
+            if (centralized_scheduler == nullptr)
+                return;
             auto global_cpuid = centralized_scheduler->GetGlobalCPUId();
             if (this->agents_.front()->cpu().id() != global_cpuid)
             {
@@ -144,17 +135,14 @@ namespace ghost
 
         ~FullOrcaFifoAgent() override
         {
-            if (currentSched == FIFOSCHEDTYPE::CENT)
-            {
-                destroyCent();
-            }
+            destroyCent();
             this->TerminateAgentTasks();
         }
 
         std::unique_ptr<Agent> MakeAgent(const Cpu &cpu) override
         {
             return std::make_unique<OrcaFifoAgent>(&this->enclave_, cpu, per_cpu_scheduler.get(), centralized_scheduler.get(),
-                                                   profiler_cpu, orcaMessenger.get(), currentSched, this);
+                                                   profiler_cpu, orcaMessenger.get(), currentSched.get(), this);
         }
 
         void RpcHandler(int64_t req, const AgentRpcArgs &args,
@@ -182,7 +170,7 @@ namespace ghost
         }
 
     private:
-        FIFOSCHEDTYPE currentSched;
+        std::unique_ptr<FIFOSCHEDTYPE> currentSched;
         std::unique_ptr<per_cpu::FifoScheduler> per_cpu_scheduler;
         std::unique_ptr<centralized::FifoScheduler> centralized_scheduler;
         std::unique_ptr<OrcaMessenger> orcaMessenger;
