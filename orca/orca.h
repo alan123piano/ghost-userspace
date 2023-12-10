@@ -197,12 +197,16 @@ private:
             // OS allocates lowest available fd (in this case, fd=1)
             close(STDOUT_FILENO);
             int stdoutfd = dup(stdout_pipe_fd[1]);
+            if (stdoutfd != STDOUT_FILENO) {
+                panic("dup stdout");
+            }
 
             // redirect stderr to write end of pipe
             close(STDERR_FILENO);
             int stderrfd = dup(stderr_pipe_fd[1]);
-
-            printf("stdoutfd=%d, stderrfd=%d\n", stdoutfd, stderrfd);
+            if (stderrfd != STDERR_FILENO) {
+                panic("dup stderr");
+            }
 
             work();
             exit(0);
