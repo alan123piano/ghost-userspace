@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
                               << ", preempt_count=" << msg->preempt_count
                               << std::endl;
 
-                    // TODO: do stuff based on metric
+                    analyzer.add_metric(*msg);
 
                     break;
                 }
