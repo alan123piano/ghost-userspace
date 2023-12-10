@@ -76,7 +76,7 @@ def run_sched_exp(sched_type: str, proportion_long_jobs: Decimal) -> List[List[s
             sched_type=sched_type,
             throughput=throughput,
             runtime=1,
-            num_workers=16,
+            num_workers=10,
             proportion_long_jobs=proportion_long_jobs,
         )
 
