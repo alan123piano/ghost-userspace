@@ -1,8 +1,8 @@
+import argparse
 import csv
 from dataclasses import dataclass
 from decimal import Decimal
 import os
-import sys
 from typing import Any
 import matplotlib.pyplot as plt
 
@@ -16,7 +16,7 @@ class ExpResult:
     latency: float
 
 
-def read_csv(filename: str) -> list[ExpResult]:
+def read_csv(filename: str, latency_stat: str) -> list[ExpResult]:
     "Read CSV into data structure."
 
     results: list[ExpResult] = []
@@ -37,20 +37,42 @@ def read_csv(filename: str) -> list[ExpResult]:
                     proportion_long_jobs=Decimal(
                         row[idx_of_keys["proportion_long_jobs"]]
                     ),
-                    latency=float(row[idx_of_keys["short_99.9_pct"]]),
+                    latency=float(row[idx_of_keys[latency_stat]]),
                 )
             )
 
     return results
 
 
+stats = [
+    (f"{reqtype}_{pctile}_pct", f"{pctile}")
+    for reqtype in ["short", "long"]
+    for pctile in ["0", "25", "50", "75", "90", "99", "99.9", "1"]
+]
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("results_dir", type=str, help="directory of results to plot")
+parser.add_argument(
+    "latency_stat",
+    type=str,
+    choices=[v[0] for v in stats],
+    nargs="?",
+    default="short_99.9_pct",
+    help="which latency stat to plot",
+)
+
+
 def main() -> None:
+    args = parser.parse_args()
+    results_dir: str = args.results_dir
+    latency_stat: str = args.latency_stat
+
     results: list[ExpResult] = []
-    resultsdir = sys.argv[1]
-    for fname in os.listdir(resultsdir):
-        fpath = os.path.join(resultsdir, fname)
+    for fname in os.listdir(results_dir):
+        fpath = os.path.join(results_dir, fname)
         if os.path.isfile(fpath) and fpath.endswith(".txt"):
-            results += read_csv(fpath)
+            results += read_csv(fpath, latency_stat)
 
     # Want to plot  : throughput vs. short_99_9_pct (tail latency).
     # Multiple lines: sched_type.
@@ -69,21 +91,27 @@ def main() -> None:
                 m[k] = []
             m[k].append(v)
 
+        # vals :: [(SchedType, Throughput, Latency)]
         vals: list[tuple[str, int, float]] = [
             (k[0], k[1], min(v)) for k, v in m.items()
         ]
-        for sched_type in ["dFCFS", "cFCFS", "cfs", "orca"]:
+        sched_types = ["dFCFS", "cFCFS", "cfs"]
+        if "orca" in set([v[0] for v in vals]):
+            sched_types.append("orca")
+
+        for sched_type in sched_types:
             svals = [(v[1], v[2]) for v in vals if v[0] == sched_type]
             xs = [v[0] for v in svals]
             ys = [v[1] for v in svals]
             ax.plot(xs, ys, label=sched_type)
 
         ax.set_xlabel("Throughput (reqs/sec)")
-        ax.set_ylabel("99.9% Latency (μs)")
+        pctile = [v[1] for v in stats if v[0] == latency_stat][0]
+        ax.set_ylabel(f"{pctile}% Latency (μs)")
         ax.legend()
         ax.set_title(title)
 
-    results = [row for row in results if row.throughput <= 300000]
+    results = [row for row in results]
 
     fig, axs = plt.subplots(2, 2)
     plot(
