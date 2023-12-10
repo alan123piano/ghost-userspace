@@ -111,6 +111,7 @@ private:
     double compute_queued_time_var() {
         double mean = 0.0;
         for (const auto &metric : metrics) {
+            printf("adding %llu %.2f\n", metric.queued_time_us, (double)metric.queued_time_us);
             mean += (double)metric.queued_time_us;
         }
         mean /= (double)metrics.size();
