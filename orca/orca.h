@@ -91,7 +91,7 @@ public:
                     .type = SchedulerConfig::SchedulerType::dFCFS};
             }
         } else {
-            panic("unimplemented");
+            throw std::runtime_error("unimplemented");
         }
     }
 
@@ -196,11 +196,11 @@ private:
             // we do this by closing stdout, then calling dup on write end
             // OS allocates lowest available fd (in this case, fd=1)
             close(STDOUT_FILENO);
-            dup(stdout_pipe_fd[1]);
+            int _ = dup(stdout_pipe_fd[1]);
 
             // redirect stderr to write end of pipe
             close(STDERR_FILENO);
-            dup(stderr_pipe_fd[1]);
+            _ = dup(stderr_pipe_fd[1]);
 
             work();
             exit(0);
