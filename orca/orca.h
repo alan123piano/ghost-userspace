@@ -117,10 +117,12 @@ private:
 
         double var = 0.0;
         for (const auto &metric : metrics) {
-            double v = metric.queued_time_us - mean;
+            double v = (double)metric.queued_time_us - mean;
             var += v * v;
         }
         var /= (double)metrics.size();
+
+        printf("mean=%.2f, var=%.2f\n", mean, var);
 
         return var;
     }
