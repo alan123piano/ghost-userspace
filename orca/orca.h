@@ -64,6 +64,9 @@ public:
             double THRESHOLD = 500 * 500; // if stdev >= 500, then we're
                                           // likely in a dispersive workload
 
+            printf("Determining scheduler. curr=dFCFS, var=%.2f, thresh=%.2f\n",
+                   var, THRESHOLD);
+
             if (var >= THRESHOLD) {
                 return SchedulerConfig{
                     .type = SchedulerConfig::SchedulerType::cFCFS,
@@ -75,6 +78,9 @@ public:
         } else if (curr_type == SchedulerConfig::SchedulerType::cFCFS) {
             double THRESHOLD = 50 * 50; // if stdev < 50, then we're
                                         // likely in a dispersive workload
+
+            printf("Determining scheduler. curr=cFCFS, var=%.2f, thresh=%.2f\n",
+                   var, THRESHOLD);
 
             if (var < THRESHOLD) {
                 return SchedulerConfig{
