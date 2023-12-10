@@ -196,11 +196,13 @@ private:
             // we do this by closing stdout, then calling dup on write end
             // OS allocates lowest available fd (in this case, fd=1)
             close(STDOUT_FILENO);
-            (void)dup(stdout_pipe_fd[1]);
+            int stdoutfd = dup(stdout_pipe_fd[1]);
 
             // redirect stderr to write end of pipe
             close(STDERR_FILENO);
-            (void)dup(stderr_pipe_fd[1]);
+            int stderrfd = dup(stderr_pipe_fd[1]);
+
+            printf("stdoutfd=%d, stderrfd=%d\n", stdoutfd, stderrfd);
 
             work();
             exit(0);
