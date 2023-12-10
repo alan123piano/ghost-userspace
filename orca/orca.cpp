@@ -65,11 +65,12 @@ int main(int argc, char *argv[]) {
     static std::unique_ptr<orca::Orca> orca_agent;
     orca_agent = std::make_unique<orca::Orca>();
 
+    orca::SchedulerConfig last_config = orca::SchedulerConfig{
+        .type = orca::SchedulerConfig::SchedulerType::dFCFS};
     orca::MetricAnalyzer analyzer;
 
     // run dFCFS by default
-    orca_agent->set_scheduler(orca::SchedulerConfig{
-        .type = orca::SchedulerConfig::SchedulerType::dFCFS});
+    orca_agent->set_scheduler(last_config);
 
     signal(SIGINT, [](int signum) {
         // call Orca destructor
@@ -135,7 +136,8 @@ int main(int argc, char *argv[]) {
                         << (int)msg->config.type << ", preemption_interval_us="
                         << msg->config.preemption_interval_us << std::endl;
 
-                    orca_agent->set_scheduler(msg->config);
+                    last_config = msg->config;
+                    orca_agent->set_scheduler(last_config);
 
                     sched_ready.once([connfd, &sched_ready](int) {
                         // send ack
@@ -148,7 +150,9 @@ int main(int argc, char *argv[]) {
                     break;
                 }
                 case orca::MessageType::DetermineScheduler: {
-                    auto suggested_config = analyzer.suggest();
+                    auto suggested_config =
+                        analyzer.suggest_from_metrics(last_config.type);
+                    analyzer.clear();
 
                     std::cout << "Received DetermineScheduler. ";
                     if (suggested_config.type ==
@@ -160,7 +164,8 @@ int main(int argc, char *argv[]) {
                     }
                     std::cout << std::endl;
 
-                    orca_agent->set_scheduler(suggested_config);
+                    last_config = suggested_config;
+                    orca_agent->set_scheduler(last_config);
 
                     sched_ready.once([connfd, type = suggested_config.type,
                                       &sched_ready](int) {

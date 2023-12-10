@@ -34,8 +34,11 @@ public:
     // Indicate that we saw a long request.
     void add_long() { ++num_long; }
 
-    // Suggest a good scheduler config based on our stats.
-    SchedulerConfig suggest() {
+    // Add a metric to the analyzer.
+    void add_metric(orca::OrcaMetric metric) { metrics.push_back(metric); }
+
+    // Suggest a config based on workload stats
+    SchedulerConfig suggest_from_ingress_hints() {
         if (num_short + num_long == 0) {
             // avoid div by zero
             // reply with dummy config
@@ -48,10 +51,6 @@ public:
 
         double p = longs / (shorts + longs);
 
-        // reset metrics
-        num_short = 0;
-        num_long = 0;
-
         if (p < 0.1) {
             return SchedulerConfig{.type =
                                        SchedulerConfig::SchedulerType::dFCFS};
@@ -62,9 +61,69 @@ public:
         }
     }
 
+    // Suggest a config just based on metrics
+    SchedulerConfig
+    suggest_from_metrics(SchedulerConfig::SchedulerType curr_type) {
+        double var = compute_queued_time_var();
+
+        if (curr_type == SchedulerConfig::SchedulerType::dFCFS) {
+            double THRESHOLD = 500 * 500; // if stdev >= 500, then we're
+                                          // likely in a dispersive workload
+
+            if (var >= THRESHOLD) {
+                return SchedulerConfig{
+                    .type = SchedulerConfig::SchedulerType::cFCFS,
+                    .preemption_interval_us = 500};
+            } else {
+                return SchedulerConfig{
+                    .type = SchedulerConfig::SchedulerType::dFCFS};
+            }
+        } else if (curr_type == SchedulerConfig::SchedulerType::cFCFS) {
+            double THRESHOLD = 50 * 50; // if stdev < 50, then we're
+                                        // likely in a dispersive workload
+
+            if (var < THRESHOLD) {
+                return SchedulerConfig{
+                    .type = SchedulerConfig::SchedulerType::cFCFS,
+                    .preemption_interval_us = 500};
+            } else {
+                return SchedulerConfig{
+                    .type = SchedulerConfig::SchedulerType::dFCFS};
+            }
+        } else {
+            panic("unimplemented");
+        }
+    }
+
+    // Reset metrics
+    void clear() {
+        num_short = 0;
+        num_long = 0;
+        metrics.clear();
+    }
+
 private:
     int num_short = 0;
     int num_long = 0;
+    std::vector<orca::OrcaMetric> metrics;
+
+    // Compute variance in queued time
+    double compute_queued_time_var() {
+        double mean = 0.0;
+        for (const auto &metric : metrics) {
+            mean += (double)metric.queued_time_us;
+        }
+        mean /= (double)metrics.size();
+
+        double var = 0.0;
+        for (const auto &metric : metrics) {
+            double v = metric.queued_time_us - mean;
+            var += v * v;
+        }
+        var /= (double)metrics.size();
+
+        return var;
+    }
 };
 
 class Orca {
