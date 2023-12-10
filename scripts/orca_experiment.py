@@ -79,9 +79,9 @@ def run_sched_exp(sched_type: str, proportion_long_jobs: Decimal) -> List[List[s
         print("Starting Orca profiling run...")
         run_experiment(
             sched_type=sched_type,
-            throughput=10000,
+            throughput=20000,
             runtime=1,
-            num_workers=16,
+            num_workers=10,
             proportion_long_jobs=proportion_long_jobs,
         )
 
