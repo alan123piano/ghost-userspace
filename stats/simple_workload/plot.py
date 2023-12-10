@@ -113,7 +113,7 @@ def main() -> None:
 
     results = [row for row in results]
 
-    fig, axs = plt.subplots(2, 2)
+    _, axs = plt.subplots(2, 2)
     plot(
         axs[0][0],
         [row for row in results if row.proportion_long_jobs == Decimal("0")],
@@ -134,8 +134,20 @@ def main() -> None:
         [row for row in results if row.proportion_long_jobs == Decimal("0.5")],
         "Scheduler Tail Latency (50-50 workload)",
     )
-
     plt.show()
+
+    def save_plot(plj: Decimal, title: str, filename: str):
+        fig, axs = plt.subplots(1, 1)
+        plot(axs, [row for row in results if row.proportion_long_jobs == plj], title)
+        fig.savefig(filename)
+
+    for plj, title in [
+        (Decimal("0"), "Scheduler Tail Latency (0-100 workload)"),
+        (Decimal("0.01"), "Scheduler Tail Latency (1-99 workload)"),
+        (Decimal("0.1"), "Scheduler Tail Latency (10-90 workload)"),
+        (Decimal("0.5"), "Scheduler Tail Latency (50-50 workload)"),
+    ]:
+        save_plot(plj, title, f"latency_{plj}.png")
 
 
 if __name__ == "__main__":
