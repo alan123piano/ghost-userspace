@@ -9,12 +9,17 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "orca.h"
-
 namespace orca {
 
 constexpr int PORT = 8000;
 constexpr size_t MAX_MESSAGE_SIZE = 1024;
+
+struct SchedulerConfig {
+    enum class SchedulerType { dFCFS, cFCFS };
+
+    SchedulerType type;
+    int preemption_interval_us = -1; // ignored for dFCFS
+};
 
 enum class MessageType {
     Ack,

@@ -14,15 +14,9 @@
 #include <vector>
 
 #include "helpers.h"
+#include "protocol.h"
 
 namespace orca {
-
-struct SchedulerConfig {
-    enum class SchedulerType { dFCFS, cFCFS };
-
-    SchedulerType type;
-    int preemption_interval_us = -1; // ignored for dFCFS
-};
 
 // Helper which suggests a scheduling config based on input data.
 // TODO: this class could form the basis of a more generalized analysis.
